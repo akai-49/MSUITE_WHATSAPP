@@ -1,0 +1,144 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "creation": "2025-09-03 20:37:30.105094",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "button_type",
+        "button_label",
+        "sequence",
+        "phone_number",
+        "voice_call_phone",
+        "website_url",
+        "example_url",
+        "url_type",
+        "otp_type",
+        "autofill_text",
+        "package_name",
+        "signature_hash",
+        "flow",
+        "flow_action",
+        "navigate_screen"
+    ],
+    "fields": [
+        {
+            "fieldname": "button_type",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "label": "Button Type",
+            "options": "Quick Reply\nCall Phone\nVisit Website\nFlow\nVoice Call\nOTP\nCatalog\nMPM\nSPM\nCopy Offer Code\nRequest Contact Info",
+            "reqd": 1
+        },
+        {
+            "fieldname": "button_label",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Button Label",
+            "reqd": 1
+        },
+        {
+            "fieldname": "sequence",
+            "fieldtype": "Int",
+            "hidden": 1,
+            "label": "Sequence"
+        },
+        {
+            "depends_on": "eval:doc.button_type == \"Call Phone\"",
+            "fieldname": "phone_number",
+            "fieldtype": "Data",
+            "label": "Phone Number"
+        },
+        {
+            "depends_on": "eval:doc.button_type == \"Voice Call\"",
+            "description": "Select the business phone number from your WhatsApp Accounts",
+            "fieldname": "voice_call_phone",
+            "fieldtype": "Select",
+            "label": "Business Phone Number"
+        },
+        {
+            "depends_on": "eval:doc.button_type == \"Visit Website\"",
+            "fieldname": "website_url",
+            "fieldtype": "Data",
+            "label": "Website URL"
+        },
+        {
+            "depends_on": "eval:doc.button_type == \"Visit Website\"",
+            "fieldname": "url_type",
+            "fieldtype": "Select",
+            "label": "URL Type",
+            "options": "Static\nDynamic"
+        },
+        {
+            "depends_on": "eval:doc.button_type == \"Visit Website\"",
+            "fieldname": "example_url",
+            "fieldtype": "Data",
+            "label": "Example URL"
+        },
+        {
+            "depends_on": "eval:doc.button_type == \"OTP\"",
+            "fieldname": "otp_type",
+            "fieldtype": "Select",
+            "label": "OTP Type",
+            "mandatory_depends_on": "eval:doc.button_type == \"OTP\"",
+            "options": "\nCOPY_CODE\nONE_TAP\nZERO_TAP"
+        },
+        {
+            "depends_on": "eval:doc.button_type == \"OTP\" && doc.otp_type == \"ONE_TAP\"",
+            "description": "Text shown on the autofill button (e.g. 'Autofill')",
+            "fieldname": "autofill_text",
+            "fieldtype": "Data",
+            "label": "Autofill Text"
+        },
+        {
+            "depends_on": "eval:doc.button_type == \"OTP\" && (doc.otp_type == \"ONE_TAP\" || doc.otp_type == \"ZERO_TAP\")",
+            "description": "Android app package name for ONE_TAP / ZERO_TAP",
+            "fieldname": "package_name",
+            "fieldtype": "Data",
+            "label": "Package Name"
+        },
+        {
+            "depends_on": "eval:doc.button_type == \"OTP\" && (doc.otp_type == \"ONE_TAP\" || doc.otp_type == \"ZERO_TAP\")",
+            "description": "Android app signature hash for ONE_TAP / ZERO_TAP",
+            "fieldname": "signature_hash",
+            "fieldtype": "Data",
+            "label": "Signature Hash"
+        },
+        {
+            "depends_on": "eval:doc.button_type == \"Flow\"",
+            "description": "Select existing WhatsApp Flow. Its flow_id will be used in the template.",
+            "fieldname": "flow",
+            "fieldtype": "Link",
+            "label": "WhatsApp Flow",
+            "options": "WhatsApp Flow"
+        },
+        {
+            "default": "navigate",
+            "depends_on": "eval:doc.button_type == \"Flow\"",
+            "fieldname": "flow_action",
+            "fieldtype": "Select",
+            "label": "Flow Action",
+            "options": "\nnavigate\ndata_exchange"
+        },
+        {
+            "depends_on": "eval:doc.button_type == \"Flow\" && doc.flow_action == \"navigate\"",
+            "description": "Screen ID to navigate to when flow opens",
+            "fieldname": "navigate_screen",
+            "fieldtype": "Data",
+            "label": "Navigate Screen"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "istable": 1,
+    "links": [],
+    "modified": "2026-04-04 12:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "WhatsApp",
+    "name": "WhatsApp Button",
+    "owner": "Administrator",
+    "permissions": [],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": []
+}

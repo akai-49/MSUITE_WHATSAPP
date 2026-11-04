@@ -1,0 +1,198 @@
+{
+    "actions": [],
+    "autoname": "format:WC-{#####}",
+    "creation": "2026-02-25 00:00:00.000000",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+        "call_id",
+        "direction",
+        "status",
+        "whatsapp_account",
+        "agent",
+        "caller_number",
+        "caller_name",
+        "callee_number",
+        "start_time",
+        "end_time",
+        "duration_seconds",
+        "duration_display",
+        "notes",
+        "sdp_offer",
+        "sdp_answer",
+        "raw_webhook",
+        "recording_url",
+        "is_acknowledged"
+    ],
+    "fields": [
+        {
+            "fieldname": "call_id",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Call ID",
+            "reqd": 1,
+            "unique": 1
+        },
+        {
+            "fieldname": "direction",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Direction",
+            "options": "\nInbound\nOutbound",
+            "reqd": 1
+        },
+        {
+            "default": "Ringing",
+            "fieldname": "status",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Status",
+            "options": "Ringing\nConnected\nCompleted\nRejected\nMissed\nFailed"
+        },
+        {
+            "fieldname": "whatsapp_account",
+            "fieldtype": "Link",
+            "in_list_view": 1,
+            "label": "WhatsApp Account",
+            "options": "WhatsApp Account",
+            "reqd": 1
+        },
+        {
+            "fieldname": "agent",
+            "fieldtype": "Link",
+            "label": "Agent",
+            "options": "User"
+        },
+        {
+            "fieldname": "caller_number",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Caller Number"
+        },
+        {
+            "fieldname": "caller_name",
+            "fieldtype": "Data",
+            "label": "Caller Name"
+        },
+        {
+            "fieldname": "callee_number",
+            "fieldtype": "Data",
+            "label": "Callee Number"
+        },
+        {
+            "fieldname": "start_time",
+            "fieldtype": "Datetime",
+            "label": "Start Time"
+        },
+        {
+            "fieldname": "end_time",
+            "fieldtype": "Datetime",
+            "label": "End Time"
+        },
+        {
+            "fieldname": "duration_seconds",
+            "fieldtype": "Int",
+            "label": "Duration (seconds)"
+        },
+        {
+            "fieldname": "duration_display",
+            "fieldtype": "Data",
+            "label": "Duration",
+            "read_only": 1
+        },
+        {
+            "fieldname": "notes",
+            "fieldtype": "Text",
+            "label": "Notes"
+        },
+        {
+            "fieldname": "sdp_offer",
+            "fieldtype": "Long Text",
+            "hidden": 1,
+            "label": "SDP Offer"
+        },
+        {
+            "description": "WebRTC SDP answer stashed by answer_call() so accept_call() can replay it to Meta. Required because Meta needs the same SDP on both pre_accept + accept actions.",
+            "fieldname": "sdp_answer",
+            "fieldtype": "Long Text",
+            "hidden": 1,
+            "label": "SDP Answer"
+        },
+        {
+            "fieldname": "raw_webhook",
+            "fieldtype": "JSON",
+            "hidden": 1,
+            "label": "Raw Webhook"
+        },
+        {
+            "fieldname": "recording_url",
+            "fieldtype": "Data",
+            "hidden": 1,
+            "label": "Recording URL"
+        },
+        {
+            "default": "0",
+            "fieldname": "is_acknowledged",
+            "fieldtype": "Check",
+            "hidden": 1,
+            "label": "Acknowledged"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2026-08-12 00:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "WhatsApp",
+    "name": "WhatsApp Call",
+    "naming_rule": "Expression (Jinja)",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "MSuite Admin",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "permlevel": 0,
+            "read": 1,
+            "report": 1,
+            "role": "Inbox Manager"
+        },
+        {
+            "permlevel": 0,
+            "read": 1,
+            "report": 1,
+            "role": "Inbox Agent"
+        },
+        {
+            "permlevel": 0,
+            "read": 1,
+            "report": 1,
+            "role": "MSuite Viewer"
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": []
+}

@@ -1,0 +1,160 @@
+{
+    "actions": [],
+    "autoname": "format:WCPERM-{#####}",
+    "creation": "2026-02-25 00:00:00.000000",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+        "user_wa_id",
+        "user_name",
+        "whatsapp_account",
+        "status",
+        "granted_at",
+        "expires_at",
+        "is_permanent",
+        "revoked_at",
+        "last_request_sent_at",
+        "last_request_message_id",
+        "can_request_again_at",
+        "consecutive_missed_calls",
+        "linked_contact"
+    ],
+    "fields": [
+        {
+            "fieldname": "user_wa_id",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "User WA ID",
+            "reqd": 1
+        },
+        {
+            "fieldname": "user_name",
+            "fieldtype": "Data",
+            "label": "User Name"
+        },
+        {
+            "fieldname": "whatsapp_account",
+            "fieldtype": "Link",
+            "in_list_view": 1,
+            "label": "WhatsApp Account",
+            "options": "WhatsApp Account",
+            "reqd": 1
+        },
+        {
+            "default": "Pending",
+            "fieldname": "status",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Status",
+            "options": "Pending\nGranted\nDeclined\nRevoked"
+        },
+        {
+            "fieldname": "granted_at",
+            "fieldtype": "Datetime",
+            "label": "Granted At"
+        },
+        {
+            "description": "Meta-supplied expiry from the call_permission_reply (when is_permanent=false). Source of truth for the badge countdown \u2014 falls back to granted_at + 7 days if missing.",
+            "fieldname": "expires_at",
+            "fieldtype": "Datetime",
+            "label": "Expires At"
+        },
+        {
+            "default": "0",
+            "description": "True when the contact granted permanent call permission (no expiry).",
+            "fieldname": "is_permanent",
+            "fieldtype": "Check",
+            "label": "Permanent"
+        },
+        {
+            "fieldname": "revoked_at",
+            "fieldtype": "Datetime",
+            "label": "Revoked At"
+        },
+        {
+            "fieldname": "last_request_sent_at",
+            "fieldtype": "Datetime",
+            "label": "Last Request Sent At"
+        },
+        {
+            "fieldname": "last_request_message_id",
+            "fieldtype": "Data",
+            "label": "Last Request Message ID",
+            "read_only": 1
+        },
+        {
+            "fieldname": "can_request_again_at",
+            "fieldtype": "Datetime",
+            "label": "Can Request Again At",
+            "read_only": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "consecutive_missed_calls",
+            "fieldtype": "Int",
+            "label": "Consecutive Missed Calls"
+        },
+        {
+            "fieldname": "linked_contact",
+            "fieldtype": "Link",
+            "label": "Linked Contact",
+            "options": "Contact"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2026-02-27 00:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "WhatsApp",
+    "name": "WhatsApp Call Permission",
+    "naming_rule": "Expression (Jinja)",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "MSuite Admin",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "permlevel": 0,
+            "read": 1,
+            "report": 1,
+            "role": "Inbox Manager"
+        },
+        {
+            "permlevel": 0,
+            "read": 1,
+            "report": 1,
+            "role": "Inbox Agent"
+        },
+        {
+            "permlevel": 0,
+            "read": 1,
+            "report": 1,
+            "role": "MSuite Viewer"
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": []
+}

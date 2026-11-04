@@ -1,0 +1,224 @@
+{
+    "actions": [],
+    "autoname": "hash",
+    "creation": "2026-10-19 00:00:00",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+        "whatsapp_account",
+        "template_id",
+        "template",
+        "metric_date",
+        "product_type",
+        "column_break_counts",
+        "sent",
+        "delivered",
+        "read",
+        "clicked",
+        "quick_reply_clicked",
+        "section_cost",
+        "amount_spent",
+        "cost_per_delivered",
+        "cost_per_click",
+        "purchase_value",
+        "currency",
+        "section_meta",
+        "conversions",
+        "unavailable_fields",
+        "clicks_supported",
+        "conversions_available",
+        "synced_at",
+        "raw_data"
+    ],
+    "fields": [
+        {
+            "fieldname": "whatsapp_account",
+            "fieldtype": "Link",
+            "label": "WhatsApp Account",
+            "options": "WhatsApp Account",
+            "reqd": 1,
+            "search_index": 1,
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "template_id",
+            "fieldtype": "Data",
+            "label": "Template ID",
+            "reqd": 1,
+            "search_index": 1,
+            "in_list_view": 1
+        },
+        {
+            "fieldname": "template",
+            "fieldtype": "Link",
+            "label": "Template",
+            "options": "WhatsApp Templates"
+        },
+        {
+            "fieldname": "metric_date",
+            "fieldtype": "Date",
+            "label": "Metric Date",
+            "reqd": 1,
+            "search_index": 1,
+            "in_list_view": 1
+        },
+        {
+            "default": "MARKETING_MESSAGES_LITE_API",
+            "description": "Meta template_analytics product_type this row was fetched with. Assumed disjoint (UNVERIFIED live).",
+            "fieldname": "product_type",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "label": "Product Type",
+            "options": "MARKETING_MESSAGES_LITE_API\nCLOUD_API",
+            "read_only": 1,
+            "search_index": 1
+        },
+        {
+            "fieldname": "column_break_counts",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "sent",
+            "fieldtype": "Int",
+            "label": "Sent"
+        },
+        {
+            "fieldname": "delivered",
+            "fieldtype": "Int",
+            "label": "Delivered"
+        },
+        {
+            "fieldname": "read",
+            "fieldtype": "Int",
+            "label": "Read"
+        },
+        {
+            "fieldname": "clicked",
+            "fieldtype": "Int",
+            "label": "Clicked"
+        },
+        {
+            "fieldname": "quick_reply_clicked",
+            "fieldtype": "Int",
+            "label": "Quick Reply Clicked"
+        },
+        {
+            "fieldname": "section_cost",
+            "fieldtype": "Section Break",
+            "label": "Cost"
+        },
+        {
+            "fieldname": "amount_spent",
+            "fieldtype": "Currency",
+            "label": "Amount Spent"
+        },
+        {
+            "fieldname": "cost_per_delivered",
+            "fieldtype": "Currency",
+            "label": "Cost Per Delivered"
+        },
+        {
+            "fieldname": "cost_per_click",
+            "fieldtype": "Currency",
+            "label": "Cost Per Click"
+        },
+        {
+            "fieldname": "purchase_value",
+            "fieldtype": "Currency",
+            "label": "Purchase Value"
+        },
+        {
+            "fieldname": "currency",
+            "fieldtype": "Data",
+            "label": "Currency"
+        },
+        {
+            "fieldname": "section_meta",
+            "fieldtype": "Section Break",
+            "label": "Meta"
+        },
+        {
+            "fieldname": "conversions",
+            "fieldtype": "Code",
+            "label": "Conversions",
+            "options": "JSON",
+            "description": "e.g. {\"WEBSITE_PURCHASES\": 3}"
+        },
+        {
+            "description": "Metrics Meta did not report. Number columns cannot be NULL in Frappe, so unavailable (not 0) is recorded here.",
+            "fieldname": "unavailable_fields",
+            "fieldtype": "Code",
+            "label": "Unavailable Fields",
+            "options": "JSON",
+            "read_only": 1
+        },
+        {
+            "fieldname": "clicks_supported",
+            "fieldtype": "Check",
+            "label": "Clicks Supported"
+        },
+        {
+            "fieldname": "conversions_available",
+            "fieldtype": "Check",
+            "label": "Conversions Available"
+        },
+        {
+            "fieldname": "synced_at",
+            "fieldtype": "Datetime",
+            "label": "Synced At",
+            "read_only": 1
+        },
+        {
+            "fieldname": "raw_data",
+            "fieldtype": "Code",
+            "label": "Raw Data",
+            "options": "JSON",
+            "read_only": 1
+        }
+    ],
+    "index_web_pages_for_search": 0,
+    "links": [],
+    "modified": "2026-10-19 00:00:00",
+    "modified_by": "Administrator",
+    "module": "WhatsApp",
+    "name": "WhatsApp Marketing Metric",
+    "naming_rule": "Random",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "read": 1,
+            "role": "System Manager",
+            "write": 1
+        },
+        {
+            "create": 1,
+            "delete": 1,
+            "read": 1,
+            "role": "MSuite Admin",
+            "write": 1
+        },
+        {
+            "role": "WhatsApp Manager",
+            "read": 1,
+            "report": 1,
+            "permlevel": 0
+        },
+        {
+            "role": "WhatsApp User",
+            "read": 1,
+            "report": 1,
+            "permlevel": 0
+        },
+        {
+            "role": "MSuite Viewer",
+            "read": 1,
+            "report": 1,
+            "permlevel": 0
+        }
+    ],
+    "sort_field": "metric_date",
+    "sort_order": "DESC",
+    "states": []
+}

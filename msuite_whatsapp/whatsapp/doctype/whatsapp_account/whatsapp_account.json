@@ -1,0 +1,283 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:account_name",
+ "creation": "2025-05-26 17:33:44.556320",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "account_name",
+  "business_name",
+  "waba_name",
+  "avatar_url",
+  "waba_currency",
+  "crm_organization",
+  "last_verified_at",
+  "needs_reauth",
+  "allow_auto_read_receipt",
+  "coexistence_history_sync",
+  "app_id",
+  "is_enabled_for_insights",
+  "default_call_agent",
+  "column_break_ryvu",
+  "status",
+  "business_id",
+  "waba_id",
+  "is_coexistence",
+  "waba_timezone",
+  "waba_utc_offset_minutes",
+  "waba_utc_offset_synced_at",
+  "token",
+  "section_break_czcc",
+  "last_token_error_at",
+  "last_token_error",
+  "section_break_fwnr",
+  "phones"
+ ],
+ "fields": [
+  {
+   "bold": 1,
+   "fieldname": "account_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Account Name",
+   "unique": 1
+  },
+  {
+   "default": "Inactive",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Active\nInactive\nExpired\nRevoked\nReconnect Required\nDisconnected",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "Set when the provider's daily token-health cron reports a broken token, or a manual permission check fails. Drives the Reconnect prompt on the Connections page.",
+   "fieldname": "needs_reauth",
+   "fieldtype": "Check",
+   "in_standard_filter": 1,
+   "label": "Needs Re-auth",
+   "read_only": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "allow_auto_read_receipt",
+   "fieldtype": "Check",
+   "label": "Allow auto read receipt"
+  },
+  {
+   "description": "WhatsApp Business Account ID from Meta",
+   "fieldname": "waba_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "WABA ID"
+  },
+  {
+   "fieldname": "waba_name",
+   "fieldtype": "Data",
+   "label": "WABA Name"
+  },
+  {
+   "description": "WhatsApp business profile picture of the default phone — shown on the Connections page. Refreshed by the daily profile sync.",
+   "fieldname": "avatar_url",
+   "fieldtype": "Data",
+   "label": "Avatar URL",
+   "length": 1000
+  },
+  {
+   "description": "Meta Business Account name — for grouping across platforms",
+   "fieldname": "business_name",
+   "fieldtype": "Data",
+   "label": "Business Name"
+  },
+  {
+   "description": "Meta Business Account ID",
+   "fieldname": "business_id",
+   "fieldtype": "Data",
+   "label": "Business ID"
+  },
+  {
+   "description": "CRM Organization this WABA number belongs to. Used to identify the organization on inbound/outbound messages.",
+   "fieldname": "crm_organization",
+   "fieldtype": "Link",
+   "label": "CRM Organization",
+   "options": "CRM Organization"
+  },
+  {
+   "description": "WABA-scoped token from Meta. Shared across all phones in this WABA.",
+   "fieldname": "token",
+   "fieldtype": "Password",
+   "label": "System User Token",
+   "length": 300
+  },
+  {
+   "description": "Last time the stored token was confirmed to work against Meta.",
+   "fieldname": "last_verified_at",
+   "fieldtype": "Datetime",
+   "label": "Last Verified At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_token_error_at",
+   "fieldtype": "Datetime",
+   "label": "Last Token Error At",
+   "read_only": 1
+  },
+  {
+   "description": "Diagnostic from the most recent failed verification or provider-reported reauth event.",
+   "fieldname": "last_token_error",
+   "fieldtype": "Small Text",
+   "label": "Last Token Error",
+   "read_only": 1
+  },
+  {
+   "description": "Phone numbers registered under this WABA. Each can be set as default incoming/outgoing.",
+   "fieldname": "phones",
+   "fieldtype": "Table",
+   "label": "Phone Numbers",
+   "options": "WhatsApp Phone Number"
+  },
+  {
+   "default": "0",
+   "description": "Set automatically when template analytics is first synced. Irreversible on Meta.",
+   "fieldname": "is_enabled_for_insights",
+   "fieldtype": "Check",
+   "label": "Insights Enabled on Meta",
+   "read_only": 1
+  },
+  {
+   "description": "Fallback agent for inbound calls when the caller doesn't match any CRM Lead / Deal / Contact. If empty, unmatched calls ring all logged-in agents.",
+   "fieldname": "default_call_agent",
+   "fieldtype": "Link",
+   "label": "Default Call Agent",
+   "options": "User"
+  },
+  {
+   "description": "Meta App ID. Required for template media uploads.",
+   "fieldname": "app_id",
+   "fieldtype": "Data",
+   "label": "App ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "waba_currency",
+   "fieldtype": "Data",
+   "label": "WABA Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "waba_timezone",
+   "fieldtype": "Data",
+   "label": "WABA Timezone",
+   "read_only": 1
+  },
+  {
+   "description": "Minutes east of UTC, derived from Meta's analytics day boundaries. 0 is UTC; only valid when 'WABA UTC Offset Synced At' is set.",
+   "fieldname": "waba_utc_offset_minutes",
+   "fieldtype": "Int",
+   "label": "WABA UTC Offset (minutes)",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "waba_utc_offset_synced_at",
+   "fieldtype": "Datetime",
+   "label": "WABA UTC Offset Synced At",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "Onboarded via Embedded Signup coexistence - the number keeps working in the WhatsApp Business app alongside Cloud API",
+   "fieldname": "is_coexistence",
+   "fieldtype": "Check",
+   "label": "Coexistence (WhatsApp Business App)",
+   "read_only": 1
+  },
+  {
+   "depends_on": "is_coexistence",
+   "description": "State of the one-time WhatsApp Business app chat-history import",
+   "fieldname": "coexistence_history_sync",
+   "fieldtype": "Select",
+   "label": "History Sync",
+   "options": "\nRequested\nReceiving\nCompleted\nDeclined",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_ryvu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_czcc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_fwnr",
+   "fieldtype": "Section Break"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-12 19:33:45.067390",
+ "modified_by": "Administrator",
+ "module": "WhatsApp",
+ "name": "WhatsApp Account",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "permlevel": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "MSuite Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "permlevel": 1,
+   "read": 1,
+   "role": "MSuite Admin",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "WhatsApp Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "WhatsApp User"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "account_name"
+}

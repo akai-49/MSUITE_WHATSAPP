@@ -1,0 +1,173 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "autoname": "format:{flow_name}",
+    "creation": "2025-01-09 10:00:00.000000",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "flow_name",
+        "whatsapp_account",
+        "status",
+        "flow_id",
+        "category",
+        "description",
+        "flow_cta",
+        "data_api_version",
+        "screens",
+        "fields",
+        "flow_json",
+        "endpoint_uri",
+        "preview_url"
+    ],
+    "fields": [
+        {
+            "fieldname": "flow_name",
+            "fieldtype": "Data",
+            "label": "Flow Name",
+            "reqd": 1,
+            "unique": 1
+        },
+        {
+            "fieldname": "whatsapp_account",
+            "fieldtype": "Link",
+            "label": "WhatsApp Account",
+            "options": "WhatsApp Account",
+            "reqd": 1
+        },
+        {
+            "default": "Draft",
+            "fieldname": "status",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Status",
+            "options": "Draft\nPublished\nDeprecated\nBlocked\nThrottled",
+            "read_only": 1
+        },
+        {
+            "description": "Flow ID from WhatsApp API (auto-generated after creation)",
+            "fieldname": "flow_id",
+            "fieldtype": "Data",
+            "label": "Flow ID",
+            "read_only": 1
+        },
+        {
+            "default": "[\"OTHER\"]",
+            "description": "JSON array of Meta Flow categories, e.g. [\"LEAD_GENERATION\", \"SURVEY\"]. Meta allows multiple. Edit via the Flow Builder's category picker rather than typing JSON by hand here.",
+            "fieldname": "category",
+            "fieldtype": "Small Text",
+            "label": "Categories (JSON)",
+            "reqd": 1
+        },
+        {
+            "fieldname": "description",
+            "fieldtype": "Small Text",
+            "label": "Description"
+        },
+        {
+            "default": "Open Form",
+            "description": "Button text shown to user to open the flow",
+            "fieldname": "flow_cta",
+            "fieldtype": "Data",
+            "label": "Call to Action"
+        },
+        {
+            "default": "6.0",
+            "fieldname": "data_api_version",
+            "fieldtype": "Select",
+            "label": "Flow JSON Version",
+            "options": "7.3\n7.2\n7.1\n7.0\n6.3\n6.2\n6.1\n6.0\n5.1"
+        },
+        {
+            "fieldname": "screens",
+            "fieldtype": "Table",
+            "label": "Screens",
+            "options": "WhatsApp Flow Screen"
+        },
+        {
+            "description": "Define fields for each screen. Set the Screen ID to match screens defined above.",
+            "fieldname": "fields",
+            "fieldtype": "Table",
+            "label": "Fields",
+            "options": "WhatsApp Flow Field"
+        },
+        {
+            "description": "Auto-generated from screens configuration",
+            "fieldname": "flow_json",
+            "fieldtype": "Code",
+            "label": "Flow JSON",
+            "options": "JSON",
+            "read_only": 1
+        },
+        {
+            "description": "For dynamic data flows that require server interaction",
+            "fieldname": "endpoint_uri",
+            "fieldtype": "Data",
+            "label": "Data Endpoint URI"
+        },
+        {
+            "fieldname": "preview_url",
+            "fieldtype": "Data",
+            "label": "Preview URL",
+            "read_only": 1
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2026-10-03 12:30:00.000000",
+    "modified_by": "Administrator",
+    "module": "WhatsApp",
+    "name": "WhatsApp Flow",
+    "naming_rule": "Expression",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "MSuite Admin",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "permlevel": 0,
+            "read": 1,
+            "report": 1,
+            "role": "WhatsApp Manager"
+        },
+        {
+            "permlevel": 0,
+            "read": 1,
+            "report": 1,
+            "role": "WhatsApp User"
+        },
+        {
+            "permlevel": 0,
+            "read": 1,
+            "report": 1,
+            "role": "MSuite Viewer"
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": [],
+    "track_changes": 1
+}

@@ -1,0 +1,73 @@
+{
+ "data": [
+  {
+   "granularity": "DAILY",
+   "product_type": "marketing_messages_lite_api",
+   "data_points": [
+    {
+     "template_id": "100000000000001",
+     "start": 1791916200,
+     "end": 1792002600,
+     "sent": 0,
+     "delivered": 0,
+     "read": 0,
+     "cost": [
+      {
+       "type": "amount_spent"
+      },
+      {
+       "type": "cost_per_delivered"
+      },
+      {
+       "type": "cost_per_url_button_click"
+      }
+     ]
+    },
+    {
+     "template_id": "100000000000001",
+     "start": 1792002600,
+     "end": 1792089000,
+     "sent": 0,
+     "delivered": 0,
+     "read": 0,
+     "cost": [
+      {
+       "type": "amount_spent"
+      },
+      {
+       "type": "cost_per_delivered"
+      },
+      {
+       "type": "cost_per_url_button_click"
+      }
+     ]
+    },
+    {
+     "template_id": "100000000000001",
+     "start": 1792089000,
+     "end": 1792175400,
+     "sent": 0,
+     "delivered": 0,
+     "read": 0,
+     "cost": [
+      {
+       "type": "amount_spent"
+      },
+      {
+       "type": "cost_per_delivered"
+      },
+      {
+       "type": "cost_per_url_button_click"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "paging": {
+  "cursors": {
+   "before": "scrubbed",
+   "after": "scrubbed"
+  }
+ }
+}

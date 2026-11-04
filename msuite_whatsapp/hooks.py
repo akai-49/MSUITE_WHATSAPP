@@ -8,7 +8,87 @@ app_license = "mit"
 # Apps
 # ------------------
 
-# required_apps = []
+required_apps = ["frappe", "msuite_core", "msuite_campaigns", "msuite_inbox"]
+
+before_install = "msuite_whatsapp.install.before_install"
+
+# WhatsApp, moved from msuite_workspace
+# ------------------
+
+_PE = "msuite_core.services.plans.plan_enforcer"
+_CCE = "msuite_campaigns.campaign.doctype.campaign_calendar_event.campaign_calendar_event"
+
+# This app's records in the global search. The key sets the order of the groups.
+msuite_search_sources = {"50_whatsapp_accounts": "msuite_whatsapp.services.home.search.search"}
+
+# This app's records in the Home page's recent list.
+msuite_home_recent = {"40_whatsapp_broadcasts": "msuite_whatsapp.services.home.recent.recent_broadcasts"}
+
+# This app's plan limits, read by msuite_core.services.plans.plan_enforcer.
+msuite_plan_gates = ["msuite_whatsapp.services.plan_gates.GATES"]
+
+doc_events = {
+	"WhatsApp Templates": {"before_insert": f"{_PE}.enforce_gate", "before_save": f"{_PE}.enforce_gate"},
+	"WhatsApp Flow": {"before_insert": f"{_PE}.enforce_gate"},
+	"WhatsApp Call": {"before_insert": f"{_PE}.enforce_gate"},
+	"Bulk WhatsApp Message": {
+		"before_insert": f"{_PE}.check_bulk_messaging",
+		"before_save": f"{_PE}.check_bulk_messaging",
+		"before_submit": f"{_PE}.check_bulk_messaging",
+		# Calendar sync
+		"after_insert": f"{_CCE}.on_source_save",
+		"on_update": f"{_CCE}.on_source_save",
+		"on_trash": f"{_CCE}.on_source_delete",
+	},
+	"WhatsApp Recipient List": {
+		"before_insert": f"{_PE}.check_recipient_list",
+		"before_save": f"{_PE}.check_recipient_list",
+	},
+}
+
+# Automation asks this channel for its sends through this hook.
+msuite_automation_steps = {"WhatsApp": "msuite_whatsapp.services.channels.automation_channel"}
+
+# Inbox finds this channel through this hook.
+msuite_inbox_channels = {"WhatsApp": "msuite_whatsapp.services.channels.inbox_channel"}
+
+campaign_channel_adapters = ["msuite_whatsapp.services.channels.campaign_adapter.ADAPTER"]
+
+# CRM's WhatsApp tab (`WhatsAppArea.vue` + `WhatsAppBox.vue`) calls the
+# four methods below. Our overrides funnel every send through
+# `inbox.services.outbound.send_to_phone` and every read off `Channel
+# Message`, so the CRM frontend keeps working unchanged while the data
+# layer is unified with the Inbox SPA.
+override_whitelisted_methods = {
+	"crm.api.whatsapp.create_whatsapp_message": "msuite_whatsapp.api.v1.crm.whatsapp.create_whatsapp_message",
+	"crm.api.whatsapp.send_whatsapp_template": "msuite_whatsapp.api.v1.crm.whatsapp.send_whatsapp_template",
+	"crm.api.whatsapp.react_on_whatsapp_message": "msuite_whatsapp.api.v1.crm.whatsapp.react_on_whatsapp_message",
+	"crm.api.whatsapp.get_whatsapp_messages": "msuite_whatsapp.api.v1.crm.whatsapp.get_whatsapp_messages",
+}
+
+scheduler_events = {
+	"cron": {
+		"*/5 * * * *": [
+			"msuite_whatsapp.tasks.jobs.schedule_bulk_messages",
+			# Call janitor — marks Ringing rows >2 min and Connected
+			# rows >2 h as Failed so a tab close / JS crash / lost
+			# webhook can't strand an agent in the busy gate forever.
+			"msuite_whatsapp.tasks.jobs.sweep_stale_calls",
+		],
+		# Analytics sync — messaging, conversation, pricing, call — every 6 hours
+		"0 */6 * * *": [
+			"msuite_whatsapp.tasks.jobs.sync_all_accounts",
+		],
+		"0 * * * *": [
+			# Meta raises a portfolio's messaging limit on its own schedule; keep the
+			# tier the bulk-send governor enforces current.
+			"msuite_whatsapp.tasks.jobs.refresh_all",
+		],
+		"0 3 * * *": [
+			"msuite_whatsapp.tasks.jobs.sync_daily_tasks",
+		],
+	},
+}
 
 # Each item in the list will be shown as an app in the apps page
 # add_to_apps_screen = [
@@ -277,3 +357,10 @@ app_license = "mit"
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
 
+_CONNECT = "msuite_whatsapp.services.accounts.connect"
+msuite_credential_handlers = {
+	"WhatsApp": f"{_CONNECT}._handle_whatsapp_credentials",
+	"whatsapp": f"{_CONNECT}._handle_whatsapp_credentials",
+}
+msuite_connected_accounts = {"whatsapp": f"{_CONNECT}.connected_accounts"}
+msuite_analytics_agent_accounts = {"whatsapp_accounts": f"{_CONNECT}.analytics_agent_accounts"}

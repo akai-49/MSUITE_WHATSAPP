@@ -1,0 +1,113 @@
+{
+    "actions": [],
+    "autoname": "hash",
+    "creation": "2026-04-08 00:00:00",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+        "whatsapp_account",
+        "metric_type",
+        "granularity",
+        "period_start",
+        "period_end",
+        "synced_at",
+        "raw_data"
+    ],
+    "fields": [
+        {
+            "fieldname": "whatsapp_account",
+            "fieldtype": "Link",
+            "in_list_view": 1,
+            "label": "WhatsApp Account",
+            "options": "WhatsApp Account",
+            "reqd": 1
+        },
+        {
+            "fieldname": "metric_type",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "label": "Metric Type",
+            "options": "messaging\nconversation\npricing\ntemplate\ncall",
+            "reqd": 1
+        },
+        {
+            "default": "DAY",
+            "fieldname": "granularity",
+            "fieldtype": "Select",
+            "label": "Granularity",
+            "options": "HALF_HOUR\nDAY\nMONTH",
+            "reqd": 1
+        },
+        {
+            "fieldname": "period_start",
+            "fieldtype": "Date",
+            "in_list_view": 1,
+            "label": "Period Start",
+            "reqd": 1
+        },
+        {
+            "fieldname": "period_end",
+            "fieldtype": "Date",
+            "label": "Period End",
+            "reqd": 1
+        },
+        {
+            "fieldname": "synced_at",
+            "fieldtype": "Datetime",
+            "in_list_view": 1,
+            "label": "Synced At",
+            "read_only": 1
+        },
+        {
+            "fieldname": "raw_data",
+            "fieldtype": "Code",
+            "label": "Raw Data",
+            "options": "JSON",
+            "read_only": 1
+        }
+    ],
+    "index_web_pages_for_search": 0,
+    "links": [],
+    "modified": "2026-04-08 00:00:00",
+    "modified_by": "Administrator",
+    "module": "WhatsApp",
+    "name": "WhatsApp Analytics Snapshot",
+    "naming_rule": "Random",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "read": 1,
+            "role": "System Manager",
+            "write": 1
+        },
+        {
+            "create": 1,
+            "delete": 1,
+            "read": 1,
+            "role": "MSuite Admin",
+            "write": 1
+        },
+        {
+            "permlevel": 0,
+            "read": 1,
+            "report": 1,
+            "role": "WhatsApp Manager"
+        },
+        {
+            "permlevel": 0,
+            "read": 1,
+            "report": 1,
+            "role": "WhatsApp User"
+        },
+        {
+            "permlevel": 0,
+            "read": 1,
+            "report": 1,
+            "role": "MSuite Viewer"
+        }
+    ],
+    "sort_field": "synced_at",
+    "sort_order": "DESC"
+}

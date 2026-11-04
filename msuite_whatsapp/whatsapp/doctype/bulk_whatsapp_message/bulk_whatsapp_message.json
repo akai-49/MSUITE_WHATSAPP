@@ -1,0 +1,408 @@
+{
+ "actions": [],
+ "beta": 1,
+ "creation": "2023-05-10 12:00:00",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "description",
+  "campaign",
+  "from_number",
+  "recipient_type",
+  "recipient_list",
+  "audience",
+  "use_batched_enqueue",
+  "delivery_engine",
+  "recipient_count",
+  "recipients",
+  "use_template",
+  "is_mpm",
+  "template",
+  "variable_type",
+  "attach",
+  "whatsapp_account",
+  "template_variables",
+  "offer_options_section",
+  "offer_expires_at",
+  "coupon_code",
+  "offer_options_column",
+  "tap_target_url",
+  "tap_target_title",
+  "thumbnail_product_retailer_id",
+  "mpm_header",
+  "is_carousel_template",
+  "carousel_catalog",
+  "product_ids",
+  "status",
+  "is_lead_automation_broadcast",
+  "lead_automation_rule",
+  "is_paused",
+  "retry_count",
+  "scheduled_time",
+  "amended_from",
+  "sent_count"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title",
+   "reqd": 1
+  },
+  {
+   "description": "Internal note about this broadcast's purpose. Not sent to recipients.",
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "description": "Top-level Campaign this broadcast belongs to. A Campaign can have many broadcasts — replaces the old Marketing Campaign.whatsapp_blast single-link (see patches.add_campaign_link_to_bulk_whatsapp_message).",
+   "fieldname": "campaign",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Campaign",
+   "options": "Marketing Campaign"
+  },
+  {
+   "fieldname": "from_number",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "From WhatsApp Number"
+  },
+  {
+   "default": "Individual",
+   "fieldname": "recipient_type",
+   "fieldtype": "Select",
+   "label": "Recipient Type",
+   "options": "\nIndividual\nRecipient List"
+  },
+  {
+   "depends_on": "// eval:doc.recipient_type=='Individual'",
+   "fieldname": "recipients",
+   "fieldtype": "Table",
+   "label": "Recipients",
+   "options": "WhatsApp Recipient"
+  },
+  {
+   "depends_on": "eval:doc.recipient_type=='Recipient List'",
+   "fieldname": "recipient_list",
+   "fieldtype": "Link",
+   "label": "Recipient List",
+   "options": "WhatsApp Recipient List"
+  },
+  {
+   "fieldname": "recipient_count",
+   "fieldtype": "Int",
+   "label": "Recipient Count",
+   "read_only": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "use_template",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Use Template"
+  },
+  {
+   "description": "Select a WhatsApp template. Variables will appear below for mapping.",
+   "fieldname": "template",
+   "fieldtype": "Link",
+   "label": "Template",
+   "options": "WhatsApp Templates",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.use_template==1",
+   "fieldname": "template_variables",
+   "fieldtype": "Code",
+   "label": "Template Variables",
+   "options": "JSON"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Draft\nScheduled\nQueued\nIn Progress\nCompleted\nPartially Failed\nCancelled\nAWS Dispatch Failed",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "Set when the parent Campaign (or this blast directly) is paused. New per-recipient sends are skipped while this is on; already-enqueued background jobs respect it at dispatch time.",
+   "fieldname": "is_paused",
+   "fieldtype": "Check",
+   "in_standard_filter": 1,
+   "label": "Paused",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "sent_count",
+   "fieldtype": "Int",
+   "label": "Sent Count",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "Number of times 'Retry Failed' has been run on this broadcast.",
+   "fieldname": "retry_count",
+   "fieldtype": "Int",
+   "label": "Retry Count",
+   "read_only": 1
+  },
+  {
+   "description": "Leave empty to send immediately after submission",
+   "fieldname": "scheduled_time",
+   "fieldtype": "Datetime",
+   "label": "Scheduled Time"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Bulk WhatsApp Message",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.use_template==1",
+   "fieldname": "attach",
+   "fieldtype": "Attach",
+   "label": "Attach"
+  },
+  {
+   "default": "Common",
+   "depends_on": "eval:doc.use_template==1",
+   "fieldname": "variable_type",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Variable Type",
+   "options": "Common\nUnique"
+  },
+  {
+   "fieldname": "whatsapp_account",
+   "fieldtype": "Link",
+   "label": "Whatsapp Account",
+   "options": "WhatsApp Account"
+  },
+  {
+   "default": "0",
+   "description": "Enables Multi-Product Message.",
+   "fieldname": "is_mpm",
+   "fieldtype": "Check",
+   "label": "Enable MPM"
+  },
+  {
+   "depends_on": "eval:doc.is_mpm==1 || doc.is_carousel_template==1",
+   "description": "Products to include in the message, picked from ERPNext Items. For a Carousel template, order matters and 2-10 are used as the cards.",
+   "fieldname": "product_ids",
+   "fieldtype": "Table",
+   "label": "Products",
+   "options": "Bulk WhatsApp Message Product",
+   "mandatory_depends_on": "eval:doc.is_mpm==1 || doc.is_carousel_template==1"
+  },
+  {
+   "description": "Read-only, fetched from the selected Template — shows the Carousel product fields below when the template is a Product Card Carousel.",
+   "fetch_from": "template.is_carousel",
+   "fieldname": "is_carousel_template",
+   "fieldtype": "Check",
+   "label": "Is Carousel Template",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.is_carousel_template==1",
+   "description": "Product catalog to source catalog_id from for each carousel card.",
+   "fieldname": "carousel_catalog",
+   "fieldtype": "Link",
+   "label": "Carousel Catalog",
+   "options": "Meta Product Catalog",
+   "mandatory_depends_on": "eval:doc.is_carousel_template==1"
+  },
+  {
+   "depends_on": "eval:doc.is_mpm==1",
+   "description": "The text that appears at the very top of the multi-product message.",
+   "fieldname": "mpm_header",
+   "fieldtype": "Data",
+   "label": "MPM Header"
+  },
+  {
+   "depends_on": "eval:doc.is_mpm==1",
+   "description": "Provide any of your products id to use its image.",
+   "fieldname": "thumbnail_product_retailer_id",
+   "fieldtype": "Data",
+   "label": "Thumbnail Product",
+   "mandatory_depends_on": "eval:doc.is_mpm==1"
+  },
+  {
+   "description": "Set when this blast was materialized by the unified dispatch hub. Provenance only - recipients are copied into this blast at creation, not read live.",
+   "fieldname": "audience",
+   "fieldtype": "Link",
+   "label": "Audience",
+   "options": "Audience",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "Enqueue recipients in chunks of 500 instead of one job each. Defaults off so existing blasts keep their current path unchanged.",
+   "fieldname": "use_batched_enqueue",
+   "fieldtype": "Check",
+   "label": "Use Batched Enqueue",
+   "read_only": 1
+  },
+  {
+   "default": "AWS",
+   "description": "Standard runs the existing RQ workers. AWS exports the blast to S3 and hands sending to the serverless pipeline.",
+   "fieldname": "delivery_engine",
+   "fieldtype": "Select",
+   "label": "Delivery Engine",
+   "options": "AWS\nStandard"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_lead_automation_broadcast",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Used in Lead Automation",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.is_lead_automation_broadcast",
+   "fieldname": "lead_automation_rule",
+   "fieldtype": "Link",
+   "label": "Linked Lead Automation Rule",
+   "options": "Messaging Automation",
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "depends_on": "eval:doc.use_template || doc.template",
+   "fieldname": "offer_options_section",
+   "fieldtype": "Section Break",
+   "label": "Offer options"
+  },
+  {
+   "description": "End of the limited-time offer countdown, in the site time zone. Required only when the template has a countdown.",
+   "fieldname": "offer_expires_at",
+   "fieldtype": "Datetime",
+   "label": "Offer Ends At"
+  },
+  {
+   "description": "Value for the template's Copy Offer Code button. Overrides the code stored on the template.",
+   "fieldname": "coupon_code",
+   "fieldtype": "Data",
+   "label": "Coupon Code"
+  },
+  {
+   "fieldname": "offer_options_column",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Optional. Overrides where tapping the message opens. Needs a title too.",
+   "fieldname": "tap_target_url",
+   "fieldtype": "Data",
+   "label": "Tap Link URL",
+   "options": "URL"
+  },
+  {
+   "fieldname": "tap_target_title",
+   "fieldtype": "Data",
+   "label": "Tap Link Title"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-10-20 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "WhatsApp",
+ "name": "Bulk WhatsApp Message",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "MSuite Admin",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "cancel": 1,
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "permlevel": 0,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "WhatsApp Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "permlevel": 0,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "WhatsApp User",
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "permlevel": 0,
+   "read": 1,
+   "report": 1,
+   "role": "MSuite Viewer"
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "MSuite Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

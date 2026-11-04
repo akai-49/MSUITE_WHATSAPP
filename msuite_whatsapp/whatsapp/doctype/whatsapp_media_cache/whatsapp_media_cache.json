@@ -1,0 +1,79 @@
+{
+    "actions": [],
+    "autoname": "hash",
+    "creation": "2026-06-26 00:00:00",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+        "whatsapp_account",
+        "file_hash",
+        "media_id",
+        "mime_type",
+        "uploaded_at"
+    ],
+    "fields": [
+        {
+            "fieldname": "whatsapp_account",
+            "fieldtype": "Link",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "WhatsApp Account",
+            "options": "WhatsApp Account",
+            "reqd": 1
+        },
+        {
+            "fieldname": "file_hash",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "File Hash (SHA-256)",
+            "length": 64,
+            "reqd": 1
+        },
+        {
+            "fieldname": "media_id",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Meta Media ID",
+            "reqd": 1
+        },
+        {
+            "fieldname": "mime_type",
+            "fieldtype": "Data",
+            "label": "MIME Type"
+        },
+        {
+            "fieldname": "uploaded_at",
+            "fieldtype": "Datetime",
+            "in_list_view": 1,
+            "label": "Uploaded At",
+            "read_only": 1
+        }
+    ],
+    "index_web_pages_for_search": 0,
+    "links": [],
+    "modified": "2026-06-26 00:00:00",
+    "modified_by": "Administrator",
+    "module": "WhatsApp",
+    "name": "WhatsApp Media Cache",
+    "naming_rule": "Random",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "read": 1,
+            "role": "System Manager",
+            "write": 1
+        },
+        {
+            "create": 1,
+            "delete": 1,
+            "read": 1,
+            "role": "MSuite Admin",
+            "write": 1
+        }
+    ],
+    "sort_field": "uploaded_at",
+    "sort_order": "DESC"
+}

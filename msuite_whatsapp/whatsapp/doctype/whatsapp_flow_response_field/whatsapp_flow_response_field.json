@@ -1,0 +1,64 @@
+{
+    "actions": [],
+    "allow_rename": 0,
+    "creation": "2026-07-12 00:00:00.000000",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "field_name",
+        "field_label",
+        "field_type",
+        "value",
+        "value_json"
+    ],
+    "fields": [
+        {
+            "description": "Key from Meta's response_json — matches the field_name defined on the WhatsApp Flow Field this answer came from",
+            "fieldname": "field_name",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Field Name",
+            "reqd": 1
+        },
+        {
+            "description": "Resolved from the Flow's field definition when the Flow is still known locally; falls back to field_name",
+            "fieldname": "field_label",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Label"
+        },
+        {
+            "fieldname": "field_type",
+            "fieldtype": "Data",
+            "label": "Field Type"
+        },
+        {
+            "description": "Human-readable value — strings/numbers as-is, arrays (CheckboxGroup) comma-joined",
+            "fieldname": "value",
+            "fieldtype": "Small Text",
+            "in_list_view": 1,
+            "label": "Value"
+        },
+        {
+            "description": "Raw JSON-encoded value as returned by Meta — preserves lists/types for programmatic use",
+            "fieldname": "value_json",
+            "fieldtype": "Small Text",
+            "label": "Value (JSON)"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "istable": 1,
+    "links": [],
+    "modified": "2026-07-12 00:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "WhatsApp",
+    "name": "WhatsApp Flow Response Field",
+    "naming_rule": "Random",
+    "owner": "Administrator",
+    "permissions": [],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": [],
+    "track_changes": 0
+}

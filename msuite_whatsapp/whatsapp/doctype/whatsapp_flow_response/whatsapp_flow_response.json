@@ -1,0 +1,197 @@
+{
+    "actions": [],
+    "allow_rename": 0,
+    "autoname": "hash",
+    "creation": "2026-07-12 00:00:00.000000",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "flow",
+        "flow_name_snapshot",
+        "whatsapp_account",
+        "status",
+        "column_break_1",
+        "contact_phone",
+        "contact_name",
+        "flow_token",
+        "lead",
+        "section_break_1",
+        "conversation",
+        "channel_message",
+        "sent_at",
+        "completed_at",
+        "section_break_2",
+        "response_json",
+        "fields"
+    ],
+    "fields": [
+        {
+            "description": "Left blank if the flow this reply belongs to can no longer be resolved locally (e.g. deleted after sending)",
+            "fieldname": "flow",
+            "fieldtype": "Link",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Flow",
+            "options": "WhatsApp Flow"
+        },
+        {
+            "description": "Flow name at the time this response was recorded, kept even if the Flow is later renamed/deleted",
+            "fieldname": "flow_name_snapshot",
+            "fieldtype": "Data",
+            "label": "Flow Name"
+        },
+        {
+            "fieldname": "whatsapp_account",
+            "fieldtype": "Link",
+            "in_standard_filter": 1,
+            "label": "WhatsApp Account",
+            "options": "WhatsApp Account"
+        },
+        {
+            "default": "Sent",
+            "fieldname": "status",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Status",
+            "options": "Sent\nCompleted",
+            "read_only": 1
+        },
+        {
+            "fieldname": "column_break_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "contact_phone",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "Contact Phone"
+        },
+        {
+            "fieldname": "contact_name",
+            "fieldtype": "Data",
+            "label": "Contact Name"
+        },
+        {
+            "description": "Correlates the outbound flow send with the inbound nfm_reply — Meta echoes this back verbatim",
+            "fieldname": "flow_token",
+            "fieldtype": "Data",
+            "label": "Flow Token",
+            "read_only": 1
+        },
+        {
+            "fieldname": "lead",
+            "fieldtype": "Link",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "CRM Lead",
+            "options": "CRM Lead"
+        },
+        {
+            "fieldname": "section_break_1",
+            "fieldtype": "Section Break"
+        },
+        {
+            "fieldname": "conversation",
+            "fieldtype": "Link",
+            "label": "Conversation",
+            "options": "Conversation",
+            "read_only": 1
+        },
+        {
+            "description": "The inbound Channel Message carrying the nfm_reply, once completed",
+            "fieldname": "channel_message",
+            "fieldtype": "Link",
+            "label": "Channel Message",
+            "options": "Channel Message",
+            "read_only": 1
+        },
+        {
+            "fieldname": "sent_at",
+            "fieldtype": "Datetime",
+            "label": "Sent At",
+            "read_only": 1
+        },
+        {
+            "fieldname": "completed_at",
+            "fieldtype": "Datetime",
+            "label": "Completed At",
+            "read_only": 1
+        },
+        {
+            "fieldname": "section_break_2",
+            "fieldtype": "Section Break",
+            "label": "Response"
+        },
+        {
+            "description": "Raw response_json from Meta's nfm_reply, kept for audit/debugging",
+            "fieldname": "response_json",
+            "fieldtype": "Long Text",
+            "label": "Raw Response JSON",
+            "read_only": 1
+        },
+        {
+            "fieldname": "fields",
+            "fieldtype": "Table",
+            "label": "Fields",
+            "options": "WhatsApp Flow Response Field"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2026-07-12 00:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "WhatsApp",
+    "name": "WhatsApp Flow Response",
+    "naming_rule": "Random",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "MSuite Admin",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "permlevel": 0,
+            "read": 1,
+            "report": 1,
+            "role": "WhatsApp Manager"
+        },
+        {
+            "permlevel": 0,
+            "read": 1,
+            "report": 1,
+            "role": "WhatsApp User"
+        },
+        {
+            "permlevel": 0,
+            "read": 1,
+            "report": 1,
+            "role": "MSuite Viewer"
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": [],
+    "track_changes": 1
+}

@@ -1,0 +1,390 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{template_name}-{language_code}",
+ "creation": "2022-10-28 13:39:09.887817",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "template_name",
+  "actual_name",
+  "is_call_permission",
+  "status",
+  "rejection_reason",
+  "id",
+  "dlt_template_id",
+  "template",
+  "parameter_format",
+  "sample_values",
+  "category",
+  "template_type",
+  "language",
+  "language_code",
+  "whatsapp_account",
+  "header_type",
+  "header",
+  "sample",
+  "footer",
+  "buttons",
+  "is_carousel",
+  "carousel_cards",
+  "add_security_recommendation",
+  "code_expiration_minutes",
+  "for_doctype",
+  "field_names",
+  "total_sent",
+  "total_delivered",
+  "total_read",
+  "last_analytics_sync",
+  "type_of_variable",
+  "media_sample",
+  "button_type",
+  "button_configuration",
+  "url_type",
+  "flow_id",
+  "offer_code",
+  "phone_number",
+  "country",
+  "quick_replies",
+  "button_order"
+ ],
+ "fields": [
+  {
+   "fieldname": "template_name",
+   "fieldtype": "Data",
+   "label": "Template Label",
+   "reqd": 1
+  },
+  {
+   "fieldname": "template",
+   "fieldtype": "Code",
+   "in_list_view": 1,
+   "label": "Template",
+   "options": "HTML",
+   "reqd": 1
+  },
+  {
+   "fieldname": "language",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Language",
+   "options": "Language",
+   "reqd": 1
+  },
+  {
+   "fieldname": "language_code",
+   "fieldtype": "Data",
+   "label": "Language Code",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.header_type == 'TEXT'",
+   "fieldname": "header",
+   "fieldtype": "Data",
+   "label": "Header"
+  },
+  {
+   "fieldname": "footer",
+   "fieldtype": "Data",
+   "label": "Footer"
+  },
+  {
+   "description": "For V16 use UTILITY and AUTHENTICATION in place of TRANSACTIONAL and OTP",
+   "fieldname": "category",
+   "fieldtype": "Select",
+   "label": "Category",
+   "options": "\nTRANSACTIONAL\nMARKETING\nOTP\nUTILITY\nAUTHENTICATION",
+   "reqd": 1
+  },
+  {
+   "default": "DEFAULT",
+   "fieldname": "template_type",
+   "fieldtype": "Select",
+   "label": "Template Type",
+   "options": "DEFAULT\nCATALOGUE\nMPM\nFLOW\nORDER_DETAILS\nCALL_PERMISSION_REQUEST\nORDER_STATUS\nOTP"
+  },
+  {
+   "depends_on": "eval:doc.template_type == 'CATALOGUE' || doc.header_type == 'PRODUCT'",
+   "fieldname": "catalog_id",
+   "fieldtype": "Data",
+   "label": "Meta Product Catalog ID"
+  },
+  {
+   "depends_on": "eval:doc.template_type == 'CATALOGUE' || doc.header_type == 'PRODUCT'",
+   "fieldname": "thumbnail_product_retailer_id",
+   "fieldtype": "Data",
+   "label": "Thumbnail Product Retailer ID"
+  },
+  {
+   "fieldname": "id",
+   "fieldtype": "Data",
+   "label": "ID",
+   "read_only": 1
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Draft\nPENDING\nAPPROVED\nREJECTED\nPAUSED\nDISABLED",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.rejection_reason",
+   "description": "Set from Meta's message_template_status_update webhook when a template is rejected, paused, or disabled.",
+   "fieldname": "rejection_reason",
+   "fieldtype": "Small Text",
+   "label": "Rejection / Disable Reason",
+   "read_only": 1
+  },
+  {
+   "fieldname": "header_type",
+   "fieldtype": "Select",
+   "label": "Header Type",
+   "options": "\nTEXT\nIMAGE\nVIDEO\nDOCUMENT\nLOCATION\nPRODUCT"
+  },
+  {
+   "default": "0",
+   "description": "Product Card Carousel \u2014 a BODY plus a CAROUSEL component of product cards. Define exactly 2 cards here; an approved template can send up to 10.",
+   "fieldname": "is_carousel",
+   "fieldtype": "Check",
+   "label": "Is Product Carousel"
+  },
+  {
+   "depends_on": "eval:doc.is_carousel==1",
+   "fieldname": "carousel_cards",
+   "fieldtype": "Table",
+   "label": "Carousel Cards",
+   "options": "WhatsApp Template Carousel Card"
+  },
+  {
+   "depends_on": "eval:doc.header_type && doc.header_type != 'LOCATION'",
+   "fieldname": "sample",
+   "fieldtype": "Attach",
+   "label": "Sample"
+  },
+  {
+   "fieldname": "sample_values",
+   "fieldtype": "Small Text",
+   "label": "Sample Values"
+  },
+  {
+   "fieldname": "actual_name",
+   "fieldtype": "Data",
+   "label": "Template Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "for_doctype",
+   "fieldtype": "Link",
+   "label": "For DocType",
+   "options": "DocType"
+  },
+  {
+   "description": "Field names to replace the value in templates",
+   "fieldname": "field_names",
+   "fieldtype": "Small Text",
+   "label": "Field names"
+  },
+  {
+   "fieldname": "buttons",
+   "fieldtype": "Table",
+   "label": "Buttons",
+   "options": "WhatsApp Button"
+  },
+  {
+   "default": "0",
+   "description": "Adds CALL_PERMISSION_REQUEST component so business can make outbound calls to the customer",
+   "fieldname": "is_call_permission",
+   "fieldtype": "Check",
+   "label": "Enable Call Permission Request"
+  },
+  {
+   "fieldname": "whatsapp_account",
+   "fieldtype": "Link",
+   "label": "WhatsApp Account",
+   "options": "WhatsApp Account"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.category == 'AUTHENTICATION'",
+   "description": "Adds 'For your security, do not share this code' to the template body",
+   "fieldname": "add_security_recommendation",
+   "fieldtype": "Check",
+   "label": "Add Security Recommendation"
+  },
+  {
+   "depends_on": "eval:doc.category == 'AUTHENTICATION'",
+   "description": "Adds a footer like 'This code expires in N minutes'",
+   "fieldname": "code_expiration_minutes",
+   "fieldtype": "Int",
+   "label": "Code Expiration (Minutes)"
+  },
+  {
+   "default": "POSITIONAL",
+   "description": "POSITIONAL uses {{1}}, {{2}}. NAMED uses {{first_name}}, {{order_id}} etc.",
+   "fieldname": "parameter_format",
+   "fieldtype": "Select",
+   "label": "Variable Format",
+   "options": "POSITIONAL\nNAMED"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_sent",
+   "fieldtype": "Int",
+   "label": "Total Sent",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_delivered",
+   "fieldtype": "Int",
+   "label": "Total Delivered",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_read",
+   "fieldtype": "Int",
+   "label": "Total Read",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_analytics_sync",
+   "fieldtype": "Datetime",
+   "label": "Last Analytics Sync",
+   "read_only": 1
+  },
+  {
+   "fieldname": "type_of_variable",
+   "fieldtype": "Select",
+   "label": "Type of Variable",
+   "options": "\nName\nNumber"
+  },
+  {
+   "fieldname": "media_sample",
+   "fieldtype": "Attach",
+   "label": "Media Sample"
+  },
+  {
+   "fieldname": "button_type",
+   "fieldtype": "Select",
+   "label": "Button Type",
+   "options": "\nQuick Reply\nCall Phone\nVisit Website\nFlow\nCopy Offer Code\nVoice Call\nOTP\nCatalog\nMPM\nSPM"
+  },
+  {
+   "fieldname": "button_configuration",
+   "fieldtype": "Long Text",
+   "label": "Button Configuration"
+  },
+  {
+   "fieldname": "url_type",
+   "fieldtype": "Select",
+   "label": "URL Type",
+   "options": "\nStatic\nDynamic"
+  },
+  {
+   "fieldname": "flow_id",
+   "fieldtype": "Data",
+   "label": "Flow ID"
+  },
+  {
+   "fieldname": "offer_code",
+   "fieldtype": "Data",
+   "label": "Offer Code"
+  },
+  {
+   "fieldname": "phone_number",
+   "fieldtype": "Data",
+   "label": "Phone Number"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Data",
+   "label": "Country"
+  },
+  {
+   "fieldname": "quick_replies",
+   "fieldtype": "Long Text",
+   "label": "Quick Replies"
+  },
+  {
+   "fieldname": "button_order",
+   "fieldtype": "Text",
+   "label": "Button Order"
+  },
+  {
+   "description": "Telecom-registered template ID, for regions that enforce DLT (India/TRAI). Optional - Meta itself does not require it.",
+   "fieldname": "dlt_template_id",
+   "fieldtype": "Data",
+   "label": "DLT Template ID"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-04-07 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "WhatsApp",
+ "name": "WhatsApp Templates",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "MSuite Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "permlevel": 0,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "WhatsApp Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "permlevel": 0,
+   "read": 1,
+   "report": 1,
+   "role": "WhatsApp User"
+  },
+  {
+   "permlevel": 0,
+   "read": 1,
+   "report": 1,
+   "role": "MSuite Viewer"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
