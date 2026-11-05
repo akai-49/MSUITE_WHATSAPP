@@ -4,51 +4,12 @@ import frappe
 import requests
 
 from msuite_core.constants import GRAPH_API_URL, GRAPH_API_VERSION, LOGGER_NAME, AccountStatus
+# One shared dispatcher for the optional avatar handler (hook, else msuite_social when installed).
+from msuite_core.services.connections.profile import _enqueue_account_avatar  # noqa: F401
 
 logger = frappe.logger(LOGGER_NAME)
 
 WHATSAPP_ACCOUNT_DOCTYPE = "WhatsApp Account"
-
-
-def _enqueue_account_avatar(doctype: str, name: str, avatar_url: str) -> None:
-	"""Enqueue background download of an account avatar image.
-
-	What:
-		Attempts to delegate avatar background downloading via registered hook
-		or dynamic import if msuite_social is installed.
-
-	Params:
-		doctype (str): Document type ('Social Account' or 'WhatsApp Account').
-		name (str): Document name.
-		avatar_url (str): Remote avatar image URL.
-
-	Returns:
-		None.
-
-	Raises:
-		None.
-
-	Side effects:
-		Enqueues background download task if handler is available.
-	"""
-	if not avatar_url:
-		return
-	hooks = frappe.get_hooks("msuite_account_avatar_handler") or []
-	if hooks:
-		for h in hooks:
-			try:
-				frappe.get_attr(h)(doctype, name, avatar_url)
-			except Exception as exc:
-				logger.warning(f"[avatar] hook {h} failed for {doctype} {name}: {exc}")
-		return
-
-	if "msuite_social" in frappe.get_installed_apps():
-		try:
-			import importlib
-			mod = importlib.import_module("msuite_social.social_post.avatar")
-			mod.enqueue_account_avatar(doctype, name, avatar_url)
-		except Exception as exc:
-			logger.warning(f"[avatar] enqueue failed for {doctype} {name}: {exc}")
 
 
 def _handle_whatsapp_credentials(credentials):
