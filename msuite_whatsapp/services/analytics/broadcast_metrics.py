@@ -283,6 +283,28 @@ def _rates(totals: dict) -> dict:
 	}
 
 
+def summarize_status_counts(rows: list[dict]) -> dict:
+	"""Summarize status counts and calculate delivery and read rates.
+
+	Folds grouped Channel Message rows (or plain status-count dicts) using status
+	implication rules (read implies delivered implies sent). Rates with a zero
+	denominator are None.
+
+	Args:
+		rows: list of dicts with 'status' and 'count' (and optional breakdown/time fields).
+
+	Returns:
+		dict with:
+			"totals": dict with counts for queued, sent, delivered, read, and failed.
+			"rates": dict with "delivery" and "read" rates (float between 0 and 1, or None).
+	"""
+	agg = _aggregate_status_rows(rows)
+	return {
+		"totals": agg["totals"],
+		"rates": _rates(agg["totals"]),
+	}
+
+
 def _to_waba_day(minute: str, system_tz: tzinfo, waba_tz: tzinfo) -> date:
 	"""Convert a system-timezone 'YYYY-MM-DD HH:MM' bucket to its calendar day in the WABA timezone (any tzinfo)."""
 	return datetime.strptime(minute, _MINUTE_PARSE).replace(tzinfo=system_tz).astimezone(waba_tz).date()

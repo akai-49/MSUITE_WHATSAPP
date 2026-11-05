@@ -12,6 +12,7 @@ from frappe.utils import add_days, getdate, today
 
 from msuite_core.services.permissions.checks import check_read, check_write
 from msuite_whatsapp.services.analytics.aivo_facts import get_whatsapp_aivo_facts
+from msuite_whatsapp.services.analytics.broadcast_metrics import _rate, summarize_status_counts
 from msuite_whatsapp.api.v1.app.analytics_query import calculate_reply_rate
 
 ACCOUNT_DOCTYPE = "WhatsApp Account"
@@ -133,6 +134,7 @@ def get_dashboard_metrics(period: str = "month", account_name: str | None = None
 	tpl_total_sent = 0
 	tpl_total_delivered = 0
 	tpl_total_read = 0
+	tpl_cat_by_name: dict[str, str] = {}
 
 	if can(TEMPLATE_DOCTYPE):
 		tpl_filters = {"whatsapp_account": account_name} if account_name else {}
@@ -161,6 +163,11 @@ def get_dashboard_metrics(period: str = "month", account_name: str | None = None
 			t_sent = t.get("total_sent") if isinstance(t, dict) else t.total_sent
 			t_deliv = t.get("total_delivered") if isinstance(t, dict) else t.total_delivered
 			t_read = t.get("total_read") if isinstance(t, dict) else t.total_read
+
+			if t_name and t_cat:
+				tpl_cat_by_name[t_name] = t_cat
+			if t_tname and t_cat:
+				tpl_cat_by_name[t_tname] = t_cat
 
 			st = (t_status or "").upper()
 			if st == "APPROVED":
@@ -200,74 +207,81 @@ def get_dashboard_metrics(period: str = "month", account_name: str | None = None
 			limit=5,
 		)
 
-	# 3. Channel Message category stats for current period
-	cm_cat_stats = {
-		"Marketing": {"sent": 0, "delivered": 0, "read": 0},
-		"Utility": {"sent": 0, "delivered": 0, "read": 0},
-		"Authentication": {"sent": 0, "delivered": 0, "read": 0},
+	# 3. Channel Message stats for current and previous periods (single query)
+	cm_cat_rows: dict[str, list[dict]] = {
+		"Marketing": [],
+		"Utility": [],
+		"Authentication": [],
 	}
-	cm_total_sent = 0
-	cm_total_delivered = 0
-	cm_total_read = 0
+	prev_cm_rows: list[dict] = []
 
 	if can(CHANNEL_MESSAGE_DOCTYPE):
-		cm_params = {"start": start_datetime, "end": end_datetime}
+		cm_params = {
+			"current_start": start_datetime,
+			"current_end": end_datetime,
+			"prev_start": prev_start_datetime,
+		}
 		cm_filter = ""
 		if account_name:
-			cm_filter = "AND cm.whatsapp_account = %(account)s"
+			cm_filter = "AND whatsapp_account = %(account)s"
 			cm_params["account"] = account_name
 
 		cm_rows = frappe.db.sql(
 			f"""
 			SELECT
-				cm.status,
-				COALESCE(t.category, cm.pricing_category, '') AS cat,
+				template_name,
+				pricing_category,
+				status,
+				CASE WHEN creation >= %(current_start)s THEN 1 ELSE 0 END AS in_current,
 				COUNT(*) AS count
-			FROM `tabChannel Message` cm
-			LEFT JOIN `tabWhatsApp Templates` t ON (cm.template_name = t.name OR cm.template_name = t.template_name)
-			WHERE cm.direction = 'Outbound'
-				AND (cm.channel_type = 'WhatsApp' OR cm.whatsapp_account IS NOT NULL)
-				AND cm.creation >= %(start)s AND cm.creation <= %(end)s
+			FROM `tabChannel Message`
+			WHERE direction = 'Outbound'
+				AND (channel_type = 'WhatsApp' OR whatsapp_account IS NOT NULL)
+				AND creation >= %(prev_start)s AND creation <= %(current_end)s
 				{cm_filter}
-			GROUP BY cat, cm.status
+			GROUP BY template_name, pricing_category, status, in_current
 			""",
 			cm_params,
 			as_dict=True,
 		)
 		for row in (cm_rows or []):
-			cat_raw = (row.cat or "").strip().upper()
-			cat_norm = CAT_MAP.get(cat_raw, "Other" if cat_raw else "Marketing")
-			status = (row.status or "").lower()
-			cnt = int(row.count or 0)
-			if status in ("sent", "delivered", "read"):
-				cm_total_sent += cnt
-				if cat_norm in cm_cat_stats:
-					cm_cat_stats[cat_norm]["sent"] += cnt
-			if status in ("delivered", "read"):
-				cm_total_delivered += cnt
-				if cat_norm in cm_cat_stats:
-					cm_cat_stats[cat_norm]["delivered"] += cnt
-			if status == "read":
-				cm_total_read += cnt
-				if cat_norm in cm_cat_stats:
-					cm_cat_stats[cat_norm]["read"] += cnt
+			in_curr = bool(row.get("in_current"))
+			if in_curr:
+				tpl_cat = tpl_cat_by_name.get(row.get("template_name"))
+				cat_raw = (tpl_cat or row.get("pricing_category") or "").strip().upper()
+				cat_norm = CAT_MAP.get(cat_raw, "Other" if cat_raw else "Marketing")
+				if cat_norm in cm_cat_rows:
+					cm_cat_rows[cat_norm].append(row)
+			else:
+				prev_cm_rows.append(row)
 
 	# 4. Merge Category rollup (prefer Channel Message in active period, fallback to template stats)
+	cm_cat_summary = {
+		cat: summarize_status_counts(cm_cat_rows[cat])
+		for cat in ("Marketing", "Utility", "Authentication")
+	}
+	cm_total_sent = sum(cm_cat_summary[cat]["totals"]["sent"] for cat in ("Marketing", "Utility", "Authentication"))
+
 	category_rollup = []
 	total_sent = 0
 	total_delivered = 0
 	total_read = 0
 
 	for cat in ("Marketing", "Utility", "Authentication"):
-		cm_c = cm_cat_stats.get(cat, {"sent": 0, "delivered": 0, "read": 0})
-		tpl_c = tpl_cat_stats.get(cat, {"sent": 0, "delivered": 0, "read": 0})
-
-		s = cm_c["sent"] if cm_total_sent > 0 else tpl_c["sent"]
-		d = cm_c["delivered"] if cm_total_sent > 0 else tpl_c["delivered"]
-		r = cm_c["read"] if cm_c["read"] > 0 else tpl_c["read"]
-
-		d_rate = round((d / s) * 100, 1) if s > 0 else 0.0
-		r_rate = round((r / d) * 100, 1) if d > 0 else 0.0
+		if cm_total_sent > 0:
+			summary_block = cm_cat_summary[cat]
+			s = summary_block["totals"]["sent"]
+			d = summary_block["totals"]["delivered"]
+			r = summary_block["totals"]["read"]
+			d_rate = round(summary_block["rates"]["delivery"] * 100, 1) if summary_block["rates"]["delivery"] is not None else None
+			r_rate = round(summary_block["rates"]["read"] * 100, 1) if summary_block["rates"]["read"] is not None else None
+		else:
+			tpl_c = tpl_cat_stats.get(cat, {"sent": 0, "delivered": 0, "read": 0})
+			s = tpl_c["sent"]
+			d = tpl_c["delivered"]
+			r = tpl_c["read"]
+			d_rate = round(_rate(d, s) * 100, 1) if _rate(d, s) is not None else None
+			r_rate = round(_rate(r, d) * 100, 1) if _rate(r, d) is not None else None
 
 		total_sent += s
 		total_delivered += d
@@ -285,8 +299,8 @@ def get_dashboard_metrics(period: str = "month", account_name: str | None = None
 			}
 		)
 
-	delivery_rate = round((total_delivered / total_sent) * 100, 1) if total_sent > 0 else 0.0
-	read_rate = round((total_read / total_delivered) * 100, 1) if total_delivered > 0 else 0.0
+	delivery_rate = round(_rate(total_delivered, total_sent) * 100, 1) if _rate(total_delivered, total_sent) is not None else None
+	read_rate = round(_rate(total_read, total_delivered) * 100, 1) if _rate(total_read, total_delivered) is not None else None
 
 	# 5. Derived reply rate and conversations opened
 	reply_info = calculate_reply_rate(account_name, start_datetime, end_datetime)
@@ -295,44 +309,14 @@ def get_dashboard_metrics(period: str = "month", account_name: str | None = None
 	conversations_opened = reply_info.get("conversations_opened", 0)
 
 	# 6. Previous-period values
-	prev_sent = 0
-	prev_delivered = 0
-	prev_read = 0
-	prev_delivery_rate = 0.0
-	prev_read_rate = 0.0
-
-	if can(CHANNEL_MESSAGE_DOCTYPE):
-		prev_params = {"start": prev_start_datetime, "end": prev_end_datetime}
-		prev_filter = ""
-		if account_name:
-			prev_filter = "AND whatsapp_account = %(account)s"
-			prev_params["account"] = account_name
-
-		prev_rows = frappe.db.sql(
-			f"""
-			SELECT status, COUNT(*) AS count
-			FROM `tabChannel Message`
-			WHERE direction = 'Outbound'
-				AND (channel_type = 'WhatsApp' OR whatsapp_account IS NOT NULL)
-				AND creation >= %(start)s AND creation <= %(end)s
-				{prev_filter}
-			GROUP BY status
-			""",
-			prev_params,
-			as_dict=True,
-		)
-		for row in (prev_rows or []):
-			st = (row.status or "").lower()
-			cnt = int(row.count or 0)
-			if st in ("sent", "delivered", "read"):
-				prev_sent += cnt
-			if st in ("delivered", "read"):
-				prev_delivered += cnt
-			if st == "read":
-				prev_read += cnt
-
-		prev_delivery_rate = round((prev_delivered / prev_sent) * 100, 1) if prev_sent > 0 else 0.0
-		prev_read_rate = round((prev_read / prev_delivered) * 100, 1) if prev_delivered > 0 else 0.0
+	prev_summary = summarize_status_counts(prev_cm_rows)
+	prev_totals = prev_summary["totals"]
+	prev_rates = prev_summary["rates"]
+	prev_sent = prev_totals["sent"]
+	prev_delivered = prev_totals["delivered"]
+	prev_read = prev_totals["read"]
+	prev_delivery_rate = round(prev_rates["delivery"] * 100, 1) if prev_rates["delivery"] is not None else None
+	prev_read_rate = round(prev_rates["read"] * 100, 1) if prev_rates["read"] is not None else None
 
 	prev_reply_info = calculate_reply_rate(account_name, prev_start_datetime, prev_end_datetime)
 	prev_replied = prev_reply_info.get("contacts_replied", 0)

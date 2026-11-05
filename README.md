@@ -8,7 +8,10 @@ WhatsApp Business for MSuite: numbers, templates, lists, broadcasts, flows, call
 - **Marketing Messages Retention**: Prunes records older than `MM_METRICS_RETENTION_DAYS` (90 days).
 - **Overview Dashboard Metrics (`get_dashboard_metrics`)**:
   - Period filtering (`7d`, `month` / month-to-date, `qtr` / 90 days) with previous-period comparison deltas.
-  - Category rollup (`Marketing`, `Utility`, `Authentication`) aggregating sent, delivered, and read counts from `Channel Message` and `WhatsApp Templates`.
+  - Efficient single-scan query combining current and previous periods via `in_current` flag without cross-table OR joins.
+  - Category resolution via in-memory template mapping (`name` and `template_name`), preventing double counting.
+  - Reuses `summarize_status_counts` from `broadcast_metrics.py` for status folding (read implies delivered implies sent).
+  - Rates with no data (zero denominator) return `None` (`null`) instead of fake `0.0`, while real zero values return `0.0`.
   - Account standing reporting real Meta sender quality rating (`High`, `Medium`, `Low`), messaging tier (`TIER_10K`, etc.), and template approval counts (`Approved`, `Pending`, `Rejected`).
   - Derived reply rate query in `analytics_query.py` measuring distinct contacts with an inbound `Channel Message` after an outbound one in the selected period (also feeding `conversations_opened`).
   - Pure rule-based Aivo helper (`services/analytics/aivo_facts.py`) reporting template rejections with reasons, quality rating alerts, and lowest delivery categories.
