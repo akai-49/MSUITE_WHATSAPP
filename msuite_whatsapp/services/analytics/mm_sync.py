@@ -82,10 +82,12 @@ def _is_enabled(account_name: str, waba_id: str) -> bool:
 
 	Opt-in is the site_config flag or the per-WABA default set when Meta reports the MM terms signed.
 	"""
+	from msuite_core.central_config import get_central_config
+
 	if not is_feature_enabled("analytics"):
 		return False
 	return bool(
-		cint(frappe.conf.get(WHATSAPP_MM_SITE_CONFIG_KEY))
+		cint(get_central_config(WHATSAPP_MM_SITE_CONFIG_KEY))
 		or frappe.db.get_default(f"{WHATSAPP_MM_TERMS_DEFAULT_PREFIX}{waba_id}")
 	)
 

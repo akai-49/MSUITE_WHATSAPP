@@ -24,6 +24,10 @@ WhatsApp Business for MSuite: numbers, templates, lists, broadcasts, flows, call
 - **Avatar Enqueue Delegation**:
   - `_handle_whatsapp_credentials` enqueues account avatar downloads lazily through `msuite_account_avatar_handler` hooks or dynamic import of `msuite_social.social_post.avatar.enqueue_account_avatar` to avoid a hard dependency on `msuite_social`.
 
+#### Central Configuration
+The following WhatsApp configuration keys are read through `msuite_core.central_config` and can still be set in `site_config.json` until removed:
+- `whatsapp_marketing_messages_enabled`
+
 
 ### Installation
 
