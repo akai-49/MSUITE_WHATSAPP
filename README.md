@@ -6,6 +6,13 @@ WhatsApp Business for MSuite: numbers, templates, lists, broadcasts, flows, call
 - **WhatsApp Analytics Snapshot Compaction**: `_save_snapshot` upserts exactly 1 row per `(whatsapp_account, metric_type, granularity)` using deterministic `snapshot_key = make_key(whatsapp_account, metric_type, granularity)` to prevent table bloat.
 - **Deduplication Patch**: `whatsapp_compact_analytics_snapshots` deduplicates legacy rows, backfills `snapshot_key`, and adds a database unique constraint.
 - **Marketing Messages Retention**: Prunes records older than `MM_METRICS_RETENTION_DAYS` (90 days).
+- **Overview Dashboard Metrics (`get_dashboard_metrics`)**:
+  - Period filtering (`7d`, `month` / month-to-date, `qtr` / 90 days) with previous-period comparison deltas.
+  - Category rollup (`Marketing`, `Utility`, `Authentication`) aggregating sent, delivered, and read counts from `Channel Message` and `WhatsApp Templates`.
+  - Account standing reporting real Meta sender quality rating (`High`, `Medium`, `Low`), messaging tier (`TIER_10K`, etc.), and template approval counts (`Approved`, `Pending`, `Rejected`).
+  - Derived reply rate query in `analytics_query.py` measuring distinct contacts with an inbound `Channel Message` after an outbound one in the selected period (also feeding `conversations_opened`).
+  - Pure rule-based Aivo helper (`services/analytics/aivo_facts.py`) reporting template rejections with reasons, quality rating alerts, and lowest delivery categories.
+  - Preserves BUG-023 per-doctype permission gating and all legacy keys (`metrics`, `recent_templates`, `recent_broadcasts`).
 
 #### Channels & Account Connect
 - **WhatsApp Sticker & Local Media Upload**:

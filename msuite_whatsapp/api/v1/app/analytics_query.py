@@ -1119,3 +1119,135 @@ def get_marketing_metrics_by_template(account_name: str | None = None, days=MM_M
 		)
 	rows.sort(key=lambda r: (r["sent"] is not None, r["sent"] or 0), reverse=True)
 	return {"templates": rows[:MM_TEMPLATE_ROWS_LIMIT], "truncated": len(rows) > MM_TEMPLATE_ROWS_LIMIT}
+
+
+def calculate_reply_rate(
+	account_name: str | None = None,
+	start_datetime: str | None = None,
+	end_datetime: str | None = None,
+) -> dict:
+	"""Calculate derived WhatsApp reply rate and conversations opened.
+
+	Finds distinct contacts who received an outbound WhatsApp message in the period,
+	and calculates the fraction who sent an inbound message after their first outbound
+	message in that same period.
+
+	Args:
+		account_name: Optional WhatsApp Account name to filter.
+		start_datetime: ISO datetime string or YYYY-MM-DD for lower bound.
+		end_datetime: ISO datetime string or YYYY-MM-DD for upper bound.
+
+	Returns:
+		dict: {
+			"contacts_messaged": int,
+			"contacts_replied": int,
+			"reply_rate": float (percentage, e.g. 15.5),
+			"conversations_opened": int,
+		}
+	"""
+	if not frappe.has_permission("Channel Message", "read"):
+		return {
+			"contacts_messaged": 0,
+			"contacts_replied": 0,
+			"reply_rate": 0.0,
+			"conversations_opened": 0,
+		}
+
+	if not start_datetime:
+		start_datetime = f"{today()} 00:00:00"
+	if not end_datetime:
+		end_datetime = f"{today()} 23:59:59.999999"
+
+	conditions = [
+		"direction = 'Outbound'",
+		"(channel_type = 'WhatsApp' OR whatsapp_account IS NOT NULL)",
+		"creation >= %(start)s",
+		"creation <= %(end)s",
+	]
+	params = {"start": str(start_datetime), "end": str(end_datetime)}
+	if account_name:
+		conditions.append("whatsapp_account = %(account)s")
+		params["account"] = str(account_name)
+
+	where_sql = " AND ".join(conditions)
+
+	out_rows = frappe.db.sql(
+		f"""
+		SELECT
+			COALESCE(channel_handle, conversation, sender_phone) AS contact_id,
+			MIN(creation) AS first_out_time
+		FROM `tabChannel Message`
+		WHERE {where_sql}
+			AND IFNULL(COALESCE(channel_handle, conversation, sender_phone), '') != ''
+		GROUP BY contact_id
+		""",
+		params,
+		as_dict=True,
+	)
+
+	contacts_messaged = len(out_rows)
+	if contacts_messaged == 0:
+		return {
+			"contacts_messaged": 0,
+			"contacts_replied": 0,
+			"reply_rate": 0.0,
+			"conversations_opened": 0,
+		}
+
+	in_conditions = [
+		"in_msg.direction = 'Inbound'",
+		"(in_msg.channel_type = 'WhatsApp' OR in_msg.whatsapp_account IS NOT NULL)",
+		"in_msg.creation >= %(start)s",
+		"in_msg.creation <= %(end)s",
+	]
+	if account_name:
+		in_conditions.append("in_msg.whatsapp_account = %(account)s")
+
+	in_where_sql = " AND ".join(in_conditions)
+
+	replied_res = frappe.db.sql(
+		f"""
+		SELECT COUNT(DISTINCT in_msg.contact_id) AS replied_count
+		FROM (
+			SELECT
+				COALESCE(channel_handle, conversation, sender_phone) AS contact_id,
+				MIN(creation) AS first_out_time
+			FROM `tabChannel Message`
+			WHERE {where_sql}
+				AND IFNULL(COALESCE(channel_handle, conversation, sender_phone), '') != ''
+			GROUP BY contact_id
+		) out_msg
+		JOIN (
+			SELECT
+				COALESCE(channel_handle, conversation, sender_phone) AS contact_id,
+				creation
+			FROM `tabChannel Message` in_msg
+			WHERE {in_where_sql}
+				AND IFNULL(COALESCE(channel_handle, conversation, sender_phone), '') != ''
+		) in_msg ON in_msg.contact_id = out_msg.contact_id AND in_msg.creation > out_msg.first_out_time
+		""",
+		params,
+		as_dict=True,
+	)
+
+	contacts_replied = int(replied_res[0].get("replied_count") or 0) if replied_res else 0
+	reply_rate = round((contacts_replied / contacts_messaged) * 100, 1)
+
+	return {
+		"contacts_messaged": contacts_messaged,
+		"contacts_replied": contacts_replied,
+		"reply_rate": reply_rate,
+		"conversations_opened": contacts_replied,
+	}
+
+
+@frappe.whitelist()
+def get_reply_rate_metrics(
+	account_name: str | None = None,
+	start_datetime: str | None = None,
+	end_datetime: str | None = None,
+) -> dict:
+	"""Whitelisted API wrapper for calculate_reply_rate."""
+	_require_analytics_read(account_name)
+	return calculate_reply_rate(account_name, start_datetime, end_datetime)
+
