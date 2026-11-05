@@ -15,14 +15,18 @@ involved; `Channel Message` is the only source of truth.
 
 from __future__ import annotations
 
+import os
+import posixpath
 import re
 from typing import Any
+from urllib.parse import unquote, urlparse
 
 import frappe
 from frappe import _
 from frappe.utils import cint
 
 from msuite_core.constants import WHATSAPP_INTERACTIVE_BODY_MAX
+from msuite_core.utils.files import is_local_file_url, resolve_frappe_path
 from msuite_core.utils.phone import customer_phone, is_bsuid  # noqa: F401
 from msuite_inbox.inbox.constants import (
 	LOGGER_NAME,
@@ -37,6 +41,8 @@ from msuite_whatsapp.constants import (
 	BSUID_AUTH_TEMPLATE_ERROR_MESSAGE,
 	CONTACT_ORIGIN_CONTACT_REQUEST,
 	DEFAULT_REQUEST_CONTACT_INFO_BODY,
+	LOCAL_PRIVATE_FILE_PATH_PREFIX,
+	MEDIA_SEND_KINDS,
 	META_BUTTON_TYPE_REQUEST_CONTACT_INFO,
 	META_ERROR_BSUID_UNSUPPORTED,
 	META_ERROR_BSUID_UNSUPPORTED_MSG,
@@ -48,6 +54,7 @@ from msuite_whatsapp.constants import (
 	UNSUPPORTED_BSUID_OTP_BUTTON_TYPES,
 	UNSUPPORTED_BSUID_TEMPLATE_CATEGORIES,
 	UNSUPPORTED_BSUID_TEMPLATE_TYPES,
+	WHATSAPP_STICKER_MIME,
 )
 from msuite_inbox.inbox.services import ad_referral
 from msuite_inbox.inbox.services.normalizer import (
@@ -93,6 +100,7 @@ _MEDIA_KIND_TO_CONTENT_TYPE = {
 	"video": MessageContentType.VIDEO,
 	"audio": MessageContentType.AUDIO,
 	"document": MessageContentType.DOCUMENT,
+	"sticker": MessageContentType.STICKER,
 }
 
 
@@ -296,7 +304,7 @@ def _normalise_message(
 		text_content = f"Contacts: {'; '.join(summary_parts)}" if summary_parts else "Contacts received"
 		interactive_payload = {"contacts": contacts_list}
 
-	elif meta_type in ("image", "video", "audio", "document", "sticker"):
+	elif meta_type in MEDIA_SEND_KINDS:
 		media = message.get(meta_type) or {}
 		text_content = media.get("caption", "") or ""
 		attachments = [
@@ -652,6 +660,83 @@ def _save_media_as_file(
 # ── Outbound send ────────────────────────────────────────────────────────
 
 
+def _is_own_host(hostname: str | None) -> bool:
+	"""True for a relative URL or one on this site's own host (site URL or the current request's host).
+
+	What:
+		Determines whether a media URL hostname is local to the current Frappe site
+		(either matching site URL or the incoming HTTP request host).
+
+	Params:
+		hostname (str | None): Host part of the media link, or None for a relative link.
+
+	Returns:
+		bool: True if hostname is None/empty or matches current site / request host.
+
+	Raises:
+		None.
+
+	Side effects:
+		Inspects frappe.utils.get_url() and frappe.local.request.
+	"""
+	if not hostname:
+		return True
+	own = {urlparse(frappe.utils.get_url()).hostname}
+	request = getattr(frappe.local, "request", None)
+	if request is not None:
+		own.add(request.host.split(":")[0])
+	return hostname in own
+
+
+def _upload_local_media(body: dict, account) -> None:
+	"""Swap a media `link` for a Meta media `id` when the file lives on this site.
+
+	What:
+		Uploads site-hosted media files (/files/ and /private/files/) to Meta's media
+		upload API and replaces the 'link' parameter with 'id' in the outbound body.
+		Verifies file existence, path traversal safety, and read permissions on private files.
+
+	Params:
+		body (dict): Outbound Meta Cloud API payload; mutated in place.
+		account: WhatsApp Account document or doc-like object with .name.
+
+	Returns:
+		None.
+
+	Raises:
+		frappe.PermissionError: If caller lacks read permission for a private file.
+		frappe.ValidationError: If media upload to Meta fails.
+
+	Side effects:
+		Uploads file to Meta media API (skipped on cache hit) and mutates body dict.
+	"""
+	if not isinstance(body, dict):
+		return
+	kind = body.get("type")
+	media = body.get(kind) if kind in MEDIA_SEND_KINDS else None
+	if not isinstance(media, dict):
+		return
+	link = media.get("link")
+	if not link:
+		return
+	parts = urlparse(link)
+	# normpath collapses "/files/../x" so a traversal cannot escape the files folders.
+	path = posixpath.normpath(unquote(parts.path))
+	if not is_local_file_url(path) or not _is_own_host(parts.hostname):
+		return
+	if not os.path.exists(resolve_frappe_path(path)):
+		return
+	# Uploading sends the file to Meta, so private files need File read permission (no silent exfiltration).
+	if path.startswith(LOCAL_PRIVATE_FILE_PATH_PREFIX):
+		file_name = frappe.db.get_value("File", {"file_url": path}, "name")
+		if not (file_name and frappe.has_permission("File", "read", doc=file_name)):
+			frappe.throw(_("You do not have permission to send this file"), frappe.PermissionError)
+	from msuite_whatsapp.integrations.meta.media_provider import upload_media
+
+	media["id"] = upload_media(path, account.name)
+	del media["link"]
+
+
 def send(conversation_doc, payload: dict) -> None:
 	"""Send a message defined by `payload` to the conversation's customer.
 
@@ -754,6 +839,7 @@ def send(conversation_doc, payload: dict) -> None:
 	retry = None
 	send_path = ""
 	try:
+		_upload_local_media(body, account)
 		resp_data, send_path = send_to_meta(account, body, phone_number_id=payload.get("phone_number_id"))
 		platform_message_id = ((resp_data.get("messages") or [{}])[0] or {}).get("id", "")
 		ok, error = True, None
@@ -1056,7 +1142,7 @@ def _build_send_body(target: Any, payload: dict) -> dict | None:
 			"interactive": interactive,
 		}
 
-	if kind in ("image", "video", "audio", "document"):
+	if kind in MEDIA_SEND_KINDS:
 		return _build_media_body(target_val, kind, payload, target_field=target_field)
 	if kind == "flow":
 		return _build_flow_body(target_val, payload, target_field=target_field)
@@ -1335,10 +1421,12 @@ def _build_media_body(target: Any, kind: str, payload: dict, target_field: str |
 	"""Outbound WhatsApp media — supports either a hosted URL (`media_url`)
 	or a pre-uploaded media id (`media_id`). Meta requires exactly one.
 
-	Audio messages cannot carry a caption (Meta API constraint); for all
+	Audio and sticker messages cannot carry a caption (Meta API constraint); for all
 	other media we forward `caption` when provided. Documents also get a
 	`filename` hint.
 	"""
+	if kind == "sticker" and (payload.get("mime_type") or WHATSAPP_STICKER_MIME) != WHATSAPP_STICKER_MIME:
+		return None  # Meta only accepts WebP stickers.
 	media: dict = {}
 	if payload.get("media_id"):
 		media["id"] = payload["media_id"]
@@ -1347,7 +1435,7 @@ def _build_media_body(target: Any, kind: str, payload: dict, target_field: str |
 	else:
 		return None  # Nothing to send.
 
-	if kind != "audio" and payload.get("caption"):
+	if kind not in ("audio", "sticker") and payload.get("caption"):
 		media["caption"] = payload["caption"]
 	if kind == "document" and payload.get("file_name"):
 		media["filename"] = payload["file_name"]
@@ -1552,6 +1640,7 @@ _OUTBOUND_SHAPE_BUILDERS = {
 	"video": _shape_media,
 	"audio": _shape_media,
 	"document": _shape_media,
+	"sticker": _shape_media,
 }
 
 

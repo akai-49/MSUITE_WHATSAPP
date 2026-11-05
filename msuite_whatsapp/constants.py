@@ -1,7 +1,20 @@
 """msuite_whatsapp constants."""
 
-from msuite_core.constants import MM_PRODUCT_TYPE, REQUEST_TIMEOUT
-from msuite_core.constants import META_SYNC_INTER_ACCOUNT_DELAY
+from msuite_core.constants import (
+	LOCAL_FILE_URL_PREFIXES,
+	META_SYNC_INTER_ACCOUNT_DELAY,
+	MM_PRODUCT_TYPE,
+	REQUEST_TIMEOUT,
+)
+
+# Meta accepts stickers only as WebP (static <= 100 KB, animated <= 500 KB, 512x512).
+# https://developers.facebook.com/docs/whatsapp/cloud-api/reference/messages#sticker-object
+WHATSAPP_STICKER_MIME = "image/webp"
+
+# Site-file URL paths that Meta cannot fetch (localhost / private) and must be uploaded instead.
+LOCAL_FILE_PATH_PREFIXES = LOCAL_FILE_URL_PREFIXES
+LOCAL_PRIVATE_FILE_PATH_PREFIX = LOCAL_FILE_URL_PREFIXES[1]
+MEDIA_SEND_KINDS = ("image", "video", "audio", "document", "sticker")
 
 
 # ── Social Accounts ──────────────────────────────────────────────────────

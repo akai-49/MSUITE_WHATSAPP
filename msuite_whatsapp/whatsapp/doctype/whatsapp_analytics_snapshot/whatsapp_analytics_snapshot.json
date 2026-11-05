@@ -8,6 +8,7 @@
         "whatsapp_account",
         "metric_type",
         "granularity",
+        "snapshot_key",
         "period_start",
         "period_end",
         "synced_at",
@@ -37,6 +38,14 @@
             "label": "Granularity",
             "options": "HALF_HOUR\nDAY\nMONTH",
             "reqd": 1
+        },
+        {
+            "description": "Deterministic hash of (whatsapp_account, metric_type, granularity). Backfilled and given a real DB unique constraint by the whatsapp_compact_analytics_snapshots patch (NOT declared unique here \u2014 that would apply the constraint at schema-sync time, before existing rows are backfilled/deduped, and blow up on the shared empty-string default).",
+            "fieldname": "snapshot_key",
+            "fieldtype": "Data",
+            "hidden": 1,
+            "label": "Snapshot Key",
+            "read_only": 1
         },
         {
             "fieldname": "period_start",

@@ -33,7 +33,6 @@ from msuite_core.constants import (
 from msuite_whatsapp.constants import (
 	ANALYTICS_INTER_ACCOUNT_DELAY,
 	ANALYTICS_REFETCH_DAYS,
-	ANALYTICS_SNAPSHOT_RETENTION,
 	HTTP_STATUS_BAD_REQUEST,
 	META_ANALYTICS_HTTP_TIMEOUT,
 	META_PERMISSION_ERROR_CODE_RANGE,
@@ -46,6 +45,7 @@ from msuite_whatsapp.constants import (
 	AnalyticsGranularity,
 	MetricType,
 )
+from msuite_core.utils.insight_keys import delete_in_batches, make_key
 from msuite_core.services.plans.plan_enforcer import check_feature_or_throw, is_feature_enabled
 from msuite_core.services.permissions.checks import check_read
 from msuite_whatsapp.queries.account_repository import set_reauth_flag
@@ -348,50 +348,46 @@ def sync_call_analytics(account_name: str, days: int = ANALYTICS_REFETCH_DAYS):
 # ═══════════════════════════════════════════════════════════════════════
 
 
-def cleanup_old_snapshots():
+def cleanup_old_snapshots() -> None:
+	"""Clean up any redundant snapshots beyond the 1-row-per-key compacted limit.
+
+	With snapshot_key upsert compaction, each (account, metric_type, granularity)
+	maintains at most one row, so unbounded growth is prevented at ingestion time.
+	This cleanup defensively removes any duplicate rows sharing a snapshot_key.
+
+	Args:
+		None.
+
+	Returns:
+		None.
+
+	Raises:
+		None.
+
+	Side effects:
+		Deletes duplicate snapshot records from the database and commits.
 	"""
-	Remove snapshots beyond the retention limit per unique key.
-	Keeps the most recent N snapshots for each
-	(account + metric_type + period_start + period_end + granularity).
-	"""
-	# Get all unique keys
-	keys = frappe.db.sql(
+	duplicate_keys = frappe.db.sql(
 		"""
-        SELECT whatsapp_account, metric_type, period_start, period_end, granularity,
-               COUNT(*) as cnt
-        FROM `tabWhatsApp Analytics Snapshot`
-        GROUP BY whatsapp_account, metric_type, period_start, period_end, granularity
-        HAVING cnt > %s
-    """,
-		ANALYTICS_SNAPSHOT_RETENTION,
+		SELECT snapshot_key
+		FROM `tabWhatsApp Analytics Snapshot`
+		WHERE snapshot_key IS NOT NULL AND snapshot_key != ''
+		GROUP BY snapshot_key
+		HAVING COUNT(*) > 1
+	""",
 		as_dict=True,
 	)
 
-	for key in keys:
-		# Get oldest snapshots beyond retention
-		old = frappe.db.sql(
-			"""
-            SELECT name FROM `tabWhatsApp Analytics Snapshot`
-            WHERE whatsapp_account = %s AND metric_type = %s
-              AND period_start = %s AND period_end = %s AND granularity = %s
-            ORDER BY synced_at DESC
-            LIMIT 999 OFFSET %s
-        """,
-			(
-				key.whatsapp_account,
-				key.metric_type,
-				key.period_start,
-				key.period_end,
-				key.granularity,
-				ANALYTICS_SNAPSHOT_RETENTION,
-			),
-			as_dict=True,
+	for d in duplicate_keys:
+		rows = frappe.get_all(
+			"WhatsApp Analytics Snapshot",
+			filters={"snapshot_key": d["snapshot_key"]},
+			fields=["name"],
+			order_by="synced_at desc, modified desc",
 		)
-
-		for row in old:
-			frappe.delete_doc("WhatsApp Analytics Snapshot", row.name, force=True)
-
-	frappe.db.commit()
+		if len(rows) > 1:
+			stale = [r.name for r in rows[1:]]
+			delete_in_batches("WhatsApp Analytics Snapshot", stale, commit=True)
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -514,19 +510,100 @@ def _call_meta_api(url: str, params: dict, account_name: str | None = None) -> d
 
 
 def _save_snapshot(
-	account_name: str, metric_type: str, period_start: str, period_end: str, granularity: str, data: dict
-):
-	"""Create a new WhatsApp Analytics Snapshot record."""
+	account_name: str,
+	metric_type: str,
+	period_start: str,
+	period_end: str,
+	granularity: str,
+	data: dict,
+) -> str:
+	"""Upsert a WhatsApp Analytics Snapshot record on deterministic snapshot_key.
+
+	Maintains at most one snapshot row per (whatsapp_account, metric_type, granularity),
+	overwriting period_start, period_end, raw_data, and synced_at on subsequent syncs.
+
+	Args:
+		account_name: WhatsApp Account document name.
+		metric_type: Category of metrics (messaging, conversation, pricing, template, call).
+		period_start: ISO format start date string (YYYY-MM-DD).
+		period_end: ISO format end date string (YYYY-MM-DD).
+		granularity: Analytics granularity string (e.g. DAY).
+		data: Raw payload dict returned from Meta Graph API.
+
+	Returns:
+		Name of the created or updated WhatsApp Analytics Snapshot document.
+
+	Raises:
+		frappe.DuplicateEntryError: If an unresolvable duplicate occurs on insertion.
+		frappe.UniqueValidationError: If unique constraint validation fails unexpectedly.
+
+	Side effects:
+		Inserts or updates a WhatsApp Analytics Snapshot row in the database and commits.
+	"""
+	key = make_key(account_name, metric_type, granularity)
+	raw_json = json.dumps(data, indent=2)
+	synced_time = now()
+
+	existing = frappe.db.get_value("WhatsApp Analytics Snapshot", {"snapshot_key": key}, "name")
+	if not existing:
+		existing = frappe.db.get_value(
+			"WhatsApp Analytics Snapshot",
+			{
+				"whatsapp_account": account_name,
+				"metric_type": metric_type,
+				"granularity": granularity,
+			},
+			"name",
+		)
+
+	if existing:
+		frappe.db.set_value(
+			"WhatsApp Analytics Snapshot",
+			existing,
+			{
+				"snapshot_key": key,
+				"period_start": period_start,
+				"period_end": period_end,
+				"raw_data": raw_json,
+				"synced_at": synced_time,
+			},
+			update_modified=True,
+		)
+		frappe.db.commit()
+		return existing
+
 	doc = frappe.new_doc("WhatsApp Analytics Snapshot")
 	doc.whatsapp_account = account_name
 	doc.metric_type = metric_type
+	doc.granularity = granularity
+	doc.snapshot_key = key
 	doc.period_start = period_start
 	doc.period_end = period_end
-	doc.granularity = granularity
-	doc.raw_data = json.dumps(data, indent=2)
-	doc.synced_at = now()
-	doc.insert(ignore_permissions=True)
-	frappe.db.commit()
+	doc.raw_data = raw_json
+	doc.synced_at = synced_time
+	doc.flags.ignore_links = True
+
+	try:
+		doc.insert(ignore_permissions=True)
+		frappe.db.commit()
+		return doc.name
+	except (frappe.DuplicateEntryError, frappe.UniqueValidationError):
+		existing = frappe.db.get_value("WhatsApp Analytics Snapshot", {"snapshot_key": key}, "name")
+		if existing:
+			frappe.db.set_value(
+				"WhatsApp Analytics Snapshot",
+				existing,
+				{
+					"period_start": period_start,
+					"period_end": period_end,
+					"raw_data": raw_json,
+					"synced_at": synced_time,
+				},
+				update_modified=True,
+			)
+			frappe.db.commit()
+			return existing
+		raise
 
 
 def _enable_insights(waba_id: str, token: str):
