@@ -12,12 +12,10 @@ from unittest.mock import MagicMock, patch
 os.environ.setdefault("FRAPPE_STREAM_LOGGING", "1")
 
 import frappe
-from msuite_inbox.inbox.constants import MessageContentType
+from msuite_inbox.inbox.constants import STICKER_MIME, MessageContentType
 from msuite_whatsapp.constants import (
-	LOCAL_FILE_PATH_PREFIXES,
 	LOCAL_PRIVATE_FILE_PATH_PREFIX,
 	MEDIA_SEND_KINDS,
-	WHATSAPP_STICKER_MIME,
 )
 from msuite_whatsapp.services.channels import inbox_channel as wa_channel
 
@@ -94,7 +92,7 @@ class TestStickerConstantsAndShapes(unittest.TestCase):
 		"""Verify sticker MIME and content type constants are properly registered.
 
 		What:
-			Asserts WHATSAPP_STICKER_MIME is webp and sticker kind maps to MessageContentType.STICKER.
+			Asserts STICKER_MIME is webp and sticker kind maps to MessageContentType.STICKER.
 
 		Params:
 			None.
@@ -108,7 +106,7 @@ class TestStickerConstantsAndShapes(unittest.TestCase):
 		Side effects:
 			None.
 		"""
-		self.assertEqual(WHATSAPP_STICKER_MIME, "image/webp")
+		self.assertEqual(STICKER_MIME, "image/webp")
 		self.assertIn("sticker", MEDIA_SEND_KINDS)
 		self.assertIn("sticker", wa_channel._MEDIA_KIND_TO_CONTENT_TYPE)
 		self.assertEqual(wa_channel._MEDIA_KIND_TO_CONTENT_TYPE["sticker"], MessageContentType.STICKER)

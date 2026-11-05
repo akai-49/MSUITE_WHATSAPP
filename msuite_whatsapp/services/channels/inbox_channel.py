@@ -30,6 +30,7 @@ from msuite_core.utils.files import is_local_file_url, resolve_frappe_path
 from msuite_core.utils.phone import customer_phone, is_bsuid  # noqa: F401
 from msuite_inbox.inbox.constants import (
 	LOGGER_NAME,
+	STICKER_MIME,
 	ChannelType,
 	Direction,
 	MessageContentType,
@@ -54,7 +55,6 @@ from msuite_whatsapp.constants import (
 	UNSUPPORTED_BSUID_OTP_BUTTON_TYPES,
 	UNSUPPORTED_BSUID_TEMPLATE_CATEGORIES,
 	UNSUPPORTED_BSUID_TEMPLATE_TYPES,
-	WHATSAPP_STICKER_MIME,
 )
 from msuite_inbox.inbox.services import ad_referral
 from msuite_inbox.inbox.services.normalizer import (
@@ -1425,7 +1425,7 @@ def _build_media_body(target: Any, kind: str, payload: dict, target_field: str |
 	other media we forward `caption` when provided. Documents also get a
 	`filename` hint.
 	"""
-	if kind == "sticker" and (payload.get("mime_type") or WHATSAPP_STICKER_MIME) != WHATSAPP_STICKER_MIME:
+	if kind == "sticker" and (payload.get("mime_type") or STICKER_MIME) != STICKER_MIME:
 		return None  # Meta only accepts WebP stickers.
 	media: dict = {}
 	if payload.get("media_id"):
