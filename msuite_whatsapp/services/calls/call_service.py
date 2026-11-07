@@ -946,7 +946,9 @@ def terminate_call(call_name):
 	return result
 
 
-def resolve_wa_account(whatsapp_account="", to_number=None):
+def resolve_wa_account(whatsapp_account="", to_number=None, required=True):
+	"""The WhatsApp Account to use. With required=False, None instead of an error
+	when the site has no outgoing account (read-only callers, e.g. the badge)."""
 	if whatsapp_account:
 		return frappe.get_doc("WhatsApp Account", whatsapp_account)
 	if to_number:
@@ -982,7 +984,7 @@ def resolve_wa_account(whatsapp_account="", to_number=None):
 			if wa_name:
 				return frappe.get_doc("WhatsApp Account", wa_name)
 	wa = _account_repo().get_whatsapp_account(account_type="outgoing")
-	if not wa:
+	if not wa and required:
 		frappe.throw(_("No default outgoing WhatsApp account configured"))
 	return wa
 
@@ -1611,9 +1613,10 @@ def get_call_permission_state(to_number="", whatsapp_account=None):
 	if not to_number:
 		return _empty_permission_state("No phone number")
 
-	wa = resolve_wa_account(whatsapp_account, to_number)
+	# Every Lead/Deal page shows this badge: no account is a state, not an error.
+	wa = resolve_wa_account(whatsapp_account, to_number, required=False)
 	if not wa:
-		return _empty_permission_state("No WhatsApp account")
+		return {**_empty_permission_state("No WhatsApp account is connected."), "can_request_permission": False}
 
 	perm = find_permission_by_number(to_number, wa.name)
 	if not perm:
