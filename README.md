@@ -17,6 +17,9 @@ WhatsApp Business for MSuite: numbers, templates, lists, broadcasts, flows, call
   - Pure rule-based Aivo helper (`services/analytics/aivo_facts.py`) reporting template rejections with reasons, quality rating alerts, and lowest delivery categories.
   - Preserves BUG-023 per-doctype permission gating and all legacy keys (`metrics`, `recent_templates`, `recent_broadcasts`).
 
+#### Template Shaping for Inbox
+- `inbox_channel._shape_template` derives `body_param` from the template components when the stored value is empty, so inbox sends no longer show an unrendered `{{...}}`. Existing stored rows are not back-filled.
+
 #### Channels & Account Connect
 - **WhatsApp Sticker & Local Media Upload**:
   - Full outbound `sticker` media kind support in `inbox_channel`, enforcing `WHATSAPP_STICKER_MIME` (`image/webp`) and omitting captions per Meta API requirements.
