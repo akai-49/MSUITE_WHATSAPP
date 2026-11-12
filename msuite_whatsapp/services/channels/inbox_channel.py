@@ -1480,13 +1480,120 @@ def _shape_text(payload):
 	)
 
 
+def _extract_body_param_from_components(components) -> dict | None:
+	"""Extract template body parameter mapping from Meta components payload.
+
+	Searches components for a 'body' component. When found, maps named parameters
+	to their parameter_name and positional parameters to their 1-based string
+	index ('1', '2', ...), matching the dictionary keys expected by
+	_render_template_body.
+
+	Params:
+		components (list | str | None): List or JSON-encoded string of Meta
+			template component dicts.
+
+	Returns:
+		dict | None: Mapping of parameter placeholder keys to parameter text
+			values, or None if no body component is present.
+
+	Raises:
+		None.
+
+	Side Effects:
+		None.
+	"""
+	if not components:
+		return None
+
+	import json as _json
+
+	comps = components
+	if isinstance(comps, str):
+		try:
+			comps = _json.loads(comps)
+		except (ValueError, TypeError):
+			comps = None
+
+	if not isinstance(comps, list):
+		return None
+
+	body_comp = None
+	for comp in comps:
+		if isinstance(comp, dict) and str(comp.get("type") or "").strip().lower() == "body":
+			body_comp = comp
+			break
+
+	if not body_comp:
+		return None
+
+	raw_params = body_comp.get("parameters")
+	if isinstance(raw_params, str):
+		try:
+			raw_params = _json.loads(raw_params)
+		except (ValueError, TypeError):
+			raw_params = []
+
+	if not isinstance(raw_params, list):
+		return None
+
+	derived = {}
+	for idx, param in enumerate(raw_params, start=1):
+		if isinstance(param, dict):
+			pname = param.get("parameter_name")
+			key = str(pname).strip() if pname else str(idx)
+			derived[key] = param.get("text")
+		else:
+			derived[str(idx)] = param
+	return derived
+
+
 def _shape_template(payload):
+	"""Shape an outbound template payload into message row fields.
+
+	When body_param is empty or missing and payload['components'] has a body
+	component, derives parameter values from the components before rendering
+	the template body so the conversation bubble shows actual sent text.
+
+	Params:
+		payload (dict): Outbound WhatsApp template message payload.
+
+	Returns:
+		tuple: (MessageContentType.TEMPLATE, text, attachments, interactive_payload, template_name)
+
+	Raises:
+		None.
+
+	Side Effects:
+		None.
+	"""
 	template_name = payload.get("template") or ""
+	body_param = payload.get("body_param")
+
+	is_empty_body = False
+	if not body_param:
+		is_empty_body = True
+	elif isinstance(body_param, str):
+		import json as _json
+
+		try:
+			parsed = _json.loads(body_param)
+			if isinstance(parsed, dict) and not parsed:
+				is_empty_body = True
+		except (ValueError, TypeError):
+			pass
+	elif isinstance(body_param, dict) and not body_param:
+		is_empty_body = True
+
+	if is_empty_body and payload.get("components"):
+		derived = _extract_body_param_from_components(payload.get("components"))
+		if derived is not None:
+			body_param = derived
+
 	# Persist the rendered body (not "[Template] <name>") so the
 	# conversation list excerpt + message bubble show what the customer
 	# actually receives. The Meta send body is built separately by
 	# `build_template_meta` and is unaffected.
-	rendered = _render_template_body(template_name, payload.get("body_param"))
+	rendered = _render_template_body(template_name, body_param)
 	return (
 		MessageContentType.TEMPLATE,
 		rendered or excerpt(f"[Template] {template_name}"),
