@@ -23,3 +23,7 @@ class TestDefaultRequireMarketingOptIn(unittest.TestCase):
 		with patch(f"{DB}.sql", return_value=[("1",)]), patch(f"{DB}.set_single_value") as setter:
 			patch_mod.execute()
 		setter.assert_not_called()
+
+	def test_after_install_hook_points_to_patch(self):
+		from msuite_whatsapp import hooks
+		self.assertEqual(hooks.after_install, "msuite_whatsapp.patches.default_require_marketing_opt_in.execute")

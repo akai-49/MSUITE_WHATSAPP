@@ -176,7 +176,8 @@ scheduler_events = {
 # ------------
 
 # before_install = "msuite_whatsapp.install.before_install"
-# after_install = "msuite_whatsapp.install.after_install"
+# Fresh installs skip patches and Frappe never writes a Check default to tabSingles, so seed require_marketing_opt_in here.
+after_install = "msuite_whatsapp.patches.default_require_marketing_opt_in.execute"
 
 # Uninstallation
 # ------------
