@@ -28,7 +28,7 @@ WhatsApp Business for MSuite: numbers, templates, lists, broadcasts, flows, call
   - `_handle_whatsapp_credentials` enqueues account avatar downloads lazily through `msuite_account_avatar_handler` hooks or dynamic import of `msuite_social.social_post.avatar.enqueue_account_avatar` to avoid a hard dependency on `msuite_social`.
 
 #### Marketing Opt-in (AUT-119)
-- `WhatsApp Settings.require_marketing_opt_in` (Check, default on): when on, Automation skips MARKETING templates for recipients without a recorded opt-in. Existing sites need `bench migrate` to add the field until then Automation treats it as on.
+- `WhatsApp Settings.require_marketing_opt_in` (Check, default on): when on, Automation skips MARKETING templates for recipients without a recorded opt-in. Existing sites need `bench migrate`: it adds the field and the patch `default_require_marketing_opt_in` writes 1 (an existing explicit 0 is kept). Before migrate Automation treats it as on.
 - `services/channels/automation_channel.has_marketing_consent(phone)`: True when a Channel Handle (platform handle or BSUID) has `opted_in` = 1, or a Contact (`phone_e164`, `mobile_no`, `phone`) has `unsubscribed_whatsapp` = 0 and `consent_updated_at` set. Always False for an opted-out recipient.
 
 #### Central Configuration

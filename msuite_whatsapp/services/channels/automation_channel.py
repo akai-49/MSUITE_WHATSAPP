@@ -40,7 +40,10 @@ def has_marketing_consent(phone: str) -> bool:
 
 	if not phone or is_opted_out(phone):
 		return False
-	candidates = _phone_candidates(phone)
+	# A BSUID matches only itself: digit-stripping it could hit someone else's phone handle.
+	from msuite_core.utils.phone import is_bsuid
+
+	candidates = [str(phone).strip()] if is_bsuid(phone) else _phone_candidates(phone)
 	for field in ("platform_handle", "bsuid"):
 		if frappe.db.exists("Channel Handle", {"channel_type": "WhatsApp", field: ["in", candidates], "opted_in": 1}):
 			return True
