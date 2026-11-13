@@ -10,6 +10,46 @@ def claim_send_slot(account: str | None, recipient: str) -> bool:
 	return claim_for_account(account, recipient)
 
 
+def _phone_candidates(phone: str) -> list[str]:
+	"""Spellings of a phone number or BSUID that stored handles may use (raw, digits, +digits)."""
+	clean = str(phone).strip()
+	digits = "".join(c for c in clean if c.isdigit())
+	return list({clean, digits, f"+{digits}"} - {"", "+"})
+
+
+def has_marketing_consent(phone: str) -> bool:
+	"""Check if a recorded positive WhatsApp opt-in exists for a phone number or BSUID.
+
+	Consent means a Channel Handle (matched on platform handle or BSUID) with
+	opted_in = 1, which is set when the customer opts in through WhatsApp. Contact
+	consent_updated_at is not used: it is also set by SMS and Email opt-outs and
+	opt-ins. An opt-out always wins.
+
+	Args:
+		phone: Recipient phone number or BSUID.
+
+	Returns:
+		bool: True when consent is recorded and the recipient is not opted out.
+
+	Raises:
+		None.
+
+	Side Effects:
+		None.
+	"""
+	import frappe
+	from msuite_core.utils.phone import is_bsuid
+
+	if not phone or is_opted_out(phone):
+		return False
+	# A BSUID matches only itself: digit-stripping it could hit someone else's phone handle.
+	candidates = [str(phone).strip()] if is_bsuid(phone) else _phone_candidates(phone)
+	return any(
+		frappe.db.exists("Channel Handle", {"channel_type": "WhatsApp", field: ["in", candidates], "opted_in": 1})
+		for field in ("platform_handle", "bsuid")
+	)
+
+
 def is_opted_out(phone: str) -> bool:
 	"""Check if a phone number or handle is opted out of WhatsApp.
 
@@ -35,9 +75,7 @@ def is_opted_out(phone: str) -> bool:
 	import json
 	import frappe
 
-	clean = str(phone).strip()
-	digits = "".join(c for c in clean if c.isdigit())
-	candidates = list({clean, digits, f"+{digits}"} - {"", "+"})
+	candidates = _phone_candidates(phone)
 	handles = frappe.get_all(
 		"Channel Handle",
 		filters={"channel_type": "WhatsApp", "platform_handle": ["in", candidates]},
