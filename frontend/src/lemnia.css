@@ -1,0 +1,1857 @@
+/* Copied from msuite_frontend/frontend/src/index.css. Frappe CRM's page already loads
+   frappe-ui's fonts, so its style.css is not imported here. */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* frappe-ui's Popover teleports its content to <body> with no z-index,
+   which means our drawer overlays (z-index 100) and any other modal
+   layer sit on top of it. The picker DOES open — you just can't see
+   it. Hoist every popover-portal'd surface above our overlays so
+   DateTimePicker, DatePicker, Autocomplete, Select etc. all surface
+   correctly no matter which page they're embedded in. */
+.PopoverContent,
+[data-radix-popper-content-wrapper],
+[data-reka-popper-content-wrapper] {
+  z-index: 1000 !important;
+}
+
+/* Shared design tokens — one source of truth for the composer family
+   (Ad Composer, Campaign, Social Composer). Components reference
+   these via `var(--name, fallback)`, so swapping the brand colour or
+   ink scale here recolours every composer at once. */
+/* All values below are FALLBACK defaults only — they exist so the page
+   doesn't flash unstyled before JS runs. The real values are written
+   onto :root as inline styles by shared/theme/applyTheme.js, using the
+   tenant's theme config (or shared/theme/theme.config.js defaults).
+   Never hardcode a colour in component CSS — add a token here and in
+   theme.config.js instead, then reference it with var(--token-name). */
+:root {
+  /* Brand */
+  --brand: #0B192C;
+  --brand-dark: #060F1D;
+  --brand-light: #E2E8F0;
+  --brand-lighter: #F1F4F8;
+
+  /* Composer family (Ad/Social/Campaign composers) */
+  --brand-25:  rgba(52, 65, 156, 0.03);
+  --brand-50:  rgba(52, 65, 156, 0.06);
+  --brand-100: rgba(52, 65, 156, 0.12);
+  --brand-200: rgba(52, 65, 156, 0.24);
+  --brand-300: #8f99d4;
+  --brand-400: #5f6bbe;
+  --brand-500: #34419c;
+  --brand-600: #2c378a;
+  --brand-700: #242e75;
+  --brand-800: #1c245e;
+  --ink-900: #0b192c;
+  --ink-850: #14233a;
+  --ink-800: #1e2d44;
+  --ink-700: #334155;
+  --ink-600: #475569;
+  --ink-500: #64748b;
+  --ink-400: #94a3b8;
+  --ink-300: #94a3b8;
+  --ink-200: #cbd5e1;
+  --ink-100: #e2e8f0;
+  --ink-50:  #f1f5f9;
+  --ink-25:  #f8fafc;
+  --green-700: #0e7a6c;
+  --green-600: #12907f;
+  --green-500: #2dc8b6;
+  --emerald-500: #12907f;
+  --orange-500: #f59e0b;
+  --amber-700: #b4541e;
+  --amber-800: #8a3f14;
+  --red-700: #b91c1c;
+  --red-600: #dc2626;
+  --red-500: #dc2626;
+  --red-300: #fca5a5;
+  --rose-500: #f43f5e;
+
+  /* Lemnia accents + AI surface + state pills (mirrors theme.config.js) */
+  --accent-teal: #12907F;
+  --accent-teal-on-light: #0E7A6C;
+  --accent-blue: #34419C;
+  --glow: #2DC8B6; /* dark surfaces ONLY */
+  --ai-bg: #0B192C; --ai-panel: #11233F; --ai-border: #213450;
+  --ai-label: #2DC8B6; --ai-text: #C6D2DE; --ai-muted: #6E83A8;
+  --ai-inset: rgba(255,255,255,0.045);
+  --border-strong: #C7CDD6;
+  --status-success-bg: #DCFCE7; --status-success-text: #15803D; --status-success-dot: #22C55E;
+  --status-warning-bg: #FEF3C7; --status-warning-text: #92400E; --status-warning-dot: #F59E0B;
+  --status-danger-bg:  #FEE4E2; --status-danger-text:  #B42318; --status-danger-dot:  #EF4444;
+  --status-neutral-bg: #F1F5F9; --status-neutral-text: #475569; --status-neutral-dot: #94A3B8;
+  --status-info-bg:    #DBEAFE; --status-info-text:    #1D4ED8; --status-info-dot:    #3B82F6;
+  /* Above page content and popovers (≤30), below every drawer scrim / modal
+     (≥39): an open drawer covers Aivo, so he never sits on its action buttons. */
+  --z-aivo-launcher: 34;
+  /* External brand marks (platform chips) — not UI state; never themed */
+  --channel-facebook: #1877F2; --channel-instagram: #E1306C; --channel-whatsapp: #25D366; --channel-linkedin: #0A66C2;
+  --channel-youtube: #FF0000; --channel-email: #6E5BD0; --channel-google: #4285F4;
+  --motion-micro: 150ms ease-out;
+  --motion-panel: 300ms cubic-bezier(0.22,1,0.36,1);
+  --motion-page: 200ms ease;
+  --motion-aivo: 450ms cubic-bezier(0.22,1,0.36,1);
+  --font-sans: "Hanken Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Primary rail + secondary sidebar */
+  --rail-bg: #0B192C;
+  --rail-border: #060F1D;
+  --rail-accent: #E2E8F0;
+  --rail-text: #9FB0CC;
+  --rail-text-bright: #E6ECF5;
+  --rail-section-label: #5E739A;
+  --rail-hover-bg: rgba(255,255,255,0.06);
+  --rail-active-bg: rgba(226,232,240,0.14);
+  --rail-scrollbar: #2A3F62;
+  --rail-scrollbar-hover: #38507F;
+  --rail-secondary-bg: #11233F;
+  --rail-secondary-border: #213450;
+  --rail-secondary-text: #9FB0CC;
+  --rail-secondary-section-label: #5E739A;
+  --rail-alert: #E5484D;
+
+  /* Surfaces */
+  --bg-page: #EDF1F6;
+  --bg-surface: #FFFFFF;
+  --bg-rail: #FFFFFF;
+  --bg-sunken: #E2E8F0;
+
+  /* Text */
+  --text-primary: #15181D;
+  --text-secondary: #5B6270;
+  --text-on-brand: #FFFFFF;
+  --text-tertiary: #5F6673;
+
+  /* Typography scale */
+  --fs-2xs: 11px;
+  --fs-xs: 12px;
+  --fs-sm: 13px;
+  --fs-md: 14px;
+  --fs-lg: 16px;
+  --fs-xl: 20px;
+  --fs-2xl: 22px;
+
+  /* Controls & layout */
+  --radius-input: 8px;
+  --page-gutter: 28px;
+  --control-h: 36px;
+  --input-h: 38px;
+
+  /* Borders */
+  --border: #E1E4EA;
+  --border-soft: #EFF0F3;
+
+  /* State */
+  --success: #12907F;
+  --success-bg: #E7F4F1;
+  --warning: #B4541E;
+  --warning-bg: #F8EADF;
+  --danger: #C4291F;
+  --danger-bg: #FCEAE9;
+  --info-bg: #EAECF6;
+
+  /* Inbox accents */
+  --inbox-bubble-in: #F3F4F6;
+  --inbox-bubble-out: #DCFCE7;
+  --inbox-hot: #12907F;
+  --inbox-warm: #F59E0B;
+  --inbox-cold: #EF4444;
+  --inbox-sla-warn: #F97316;
+
+  /* Shape */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+  --shadow-sm: 0 1px 2px rgba(20, 30, 50, 0.04);
+  --shadow-md: 0 4px 16px rgba(20, 30, 50, 0.06);
+  --shadow-panel: 6px 0 24px rgba(20, 30, 50, 0.10);
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.02), 0 4px 16px rgba(0,0,0,0.04);
+
+  /* Agent Workspace (AG-UI side canvas) — deliberately fixed-dark regardless
+     of the app's light/dark theme toggle above: a persistent "Studio"
+     surface, not a themed one. Do not wire these into applyTheme.js.
+     Values are the slate scale that CanvasWorkspace/AccountPickerCard already
+     used as inline literals; naming them here is what makes them one source
+     of truth instead of three components repeating the same hex codes. */
+  --aw-bg: #0b1120;
+  --aw-canvas: #0f172a;
+  --aw-surface: #111827;
+  --aw-surface-raised: #1e293b;
+  --aw-border: #334155;
+  --aw-border-strong: #475569;
+  --aw-text: #f8fafc;
+  --aw-text-muted: #94a3b8;
+  --aw-text-faint: #64748b;
+  --aw-accent: #3b82f6;
+  --aw-accent-hover: #60a5fa;
+  --aw-accent-text: #93c5fd;
+  --aw-accent-soft: rgba(59, 130, 246, 0.15);
+  --aw-success: #34d399;
+  --aw-warning: #fbbf24;
+  --aw-danger: #ef4444;
+  --aw-danger-soft: #fca5a5;
+  --aw-radius-sm: 6px;
+  --aw-radius-md: 8px;
+  --aw-radius-lg: 14px;
+  --aw-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4);
+
+  /* Compatibility aliases fallback */
+  --accent: var(--brand);
+  --brand-color: var(--brand);
+  --surface-surface: var(--bg-surface);
+  --surface-page: var(--bg-page);
+  --surface-sunken: var(--bg-sunken);
+  --surface-rail: var(--bg-rail);
+  --border-base: var(--border);
+  --state-success: var(--success);
+  --state-success-bg: var(--success-bg);
+  --state-success-border: var(--success);
+  --state-warning: var(--warning);
+  --state-warning-bg: var(--warning-bg);
+  --state-warning-border: var(--warning);
+  --state-danger: var(--danger);
+  --state-danger-bg: var(--danger-bg);
+  --state-danger-border: var(--danger);
+
+  /* Semantic aliases — see the matching block in applyTheme.js. These were
+     referenced by components before they were ever defined, so they either
+     sat on a hardcoded light-mode fallback or resolved to nothing. */
+  --text-muted: var(--text-tertiary);
+  --bg-hover: var(--bg-sunken);
+  --surface-bg: var(--bg-page);
+  --surface-gray-1: var(--bg-sunken);
+  --surface-surface-dark: var(--bg-sunken);
+  --border-color: var(--border);
+  --border-medium: var(--border);
+  --border-dark: var(--ink-300);
+  --danger-border: var(--danger);
+  --primary: var(--brand);
+  --gray-50: var(--ink-50);
+  --gray-200: var(--ink-200);
+  --gray-600: var(--ink-600);
+  --slate-500: var(--ink-500);
+  --shadow-lg: var(--shadow-panel);
+  --topbar-height: 56px;
+  --font-stack: var(--font-sans);
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+               "Liberation Mono", monospace;
+}
+
+/* CRM status colors — mirrors Frappe CRM's own named status-doctype
+   colors (CRM Lead Status / CRM Deal Status `color` field: "gray",
+   "blue", "green"…) so CrmStatusPill.vue matches FCRM's color coding.
+   Driven by the same `data-theme` attribute applyTheme.js sets, so it
+   stays in sync with the rest of the token system without any extra JS. */
+:root {
+  --status-gray-bg: #f1f5f9;   --status-gray-fg: #475569;   --status-gray-dot: #94a3b8;
+  --status-blue-bg: #dbeafe;   --status-blue-fg: #1d4ed8;   --status-blue-dot: #3b82f6;
+  --status-orange-bg: #ffedd5; --status-orange-fg: #c2410c; --status-orange-dot: #f97316;
+  --status-amber-bg: #fef3c7;  --status-amber-fg: #b45309;  --status-amber-dot: #f59e0b;
+  --status-yellow-bg: #fef9c3; --status-yellow-fg: #a16207; --status-yellow-dot: #eab308;
+  --status-green-bg: #dcfce7;  --status-green-fg: #15803d;  --status-green-dot: #22c55e;
+  --status-teal-bg: #ccfbf1;   --status-teal-fg: #0f766e;   --status-teal-dot: #14b8a6;
+  --status-cyan-bg: #cffafe;   --status-cyan-fg: #0e7490;   --status-cyan-dot: #06b6d4;
+  --status-red-bg: #fee2e2;    --status-red-fg: #b91c1c;    --status-red-dot: #ef4444;
+  --status-pink-bg: #fce7f3;   --status-pink-fg: #be185d;   --status-pink-dot: #ec4899;
+  --status-purple-bg: #f3e8ff; --status-purple-fg: #7e22ce; --status-purple-dot: #a855f7;
+  --status-violet-bg: #ede9fe; --status-violet-fg: #6d28d9; --status-violet-dot: #8b5cf6;
+}
+
+[data-theme='dark'] {
+  --text-tertiary: #94A3B8;
+  --status-gray-bg: rgba(148,163,184,0.16);   --status-gray-fg: #cbd5e1;   --status-gray-dot: #94a3b8;
+  --status-blue-bg: rgba(59,130,246,0.18);    --status-blue-fg: #93c5fd;   --status-blue-dot: #60a5fa;
+  --status-orange-bg: rgba(249,115,22,0.18);  --status-orange-fg: #fdba74; --status-orange-dot: #fb923c;
+  --status-amber-bg: rgba(245,158,11,0.18);   --status-amber-fg: #fcd34d; --status-amber-dot: #fbbf24;
+  --status-yellow-bg: rgba(234,179,8,0.18);   --status-yellow-fg: #fde047; --status-yellow-dot: #eab308;
+  --status-green-bg: rgba(34,197,94,0.18);    --status-green-fg: #86efac; --status-green-dot: #4ade80;
+  --status-teal-bg: rgba(20,184,166,0.18);    --status-teal-fg: #5eead4;  --status-teal-dot: #2dd4bf;
+  --status-cyan-bg: rgba(6,182,212,0.18);     --status-cyan-fg: #67e8f9;  --status-cyan-dot: #22d3ee;
+  --status-red-bg: rgba(239,68,68,0.18);      --status-red-fg: #fca5a5;   --status-red-dot: #f87171;
+  --status-pink-bg: rgba(236,72,153,0.18);    --status-pink-fg: #f9a8d4;  --status-pink-dot: #f472b6;
+  --status-purple-bg: rgba(168,85,247,0.18);  --status-purple-fg: #d8b4fe; --status-purple-dot: #c084fc;
+  --status-violet-bg: rgba(139,92,246,0.18);  --status-violet-fg: #c4b5fd; --status-violet-dot: #a78bfa;
+}
+
+html,
+body,
+#app {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  background: var(--bg-page);
+  color: var(--text-primary);
+}
+
+/* Custom thin scrollbar — used in conversation list + thread. */
+.inbox-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.inbox-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+.inbox-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ── Layout & Rails ───────────────────────────────────────────────── */
+.app-shell {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.rail {
+  width: 188px;
+  min-width: 188px;
+  background: var(--rail-bg);
+  border-right: 1px solid var(--rail-border);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  position: relative;
+  height: 100vh;
+  padding: 14px 10px 12px;
+  z-index: 110;
+  box-sizing: border-box;
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1), padding 0.2s ease;
+}
+
+.rail.collapsed {
+  width: 72px;
+  min-width: 72px;
+  padding: 18px 0;
+  align-items: center;
+}
+
+.rail-brand-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 4px;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+
+.rail-brand {
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.rail-brand-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 9px;
+}
+/* Expanded rail shows the full lockup (mark + wordmark); collapsed shows the mark. */
+.rail-brand.rail-brand--lockup { width: 150px; height: 36px; flex: 0 0 150px; border-radius: 0; overflow: visible; }
+.rail-brand.rail-brand--lockup .rail-brand-img { width: 150px; height: 36px; object-fit: contain; object-position: left center; border-radius: 0; }
+
+.rail-brand-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: #FFFFFF;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.rail.collapsed .rail-brand-container {
+  padding: 0;
+  justify-content: center;
+}
+
+.rail-scroll {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  width: 100%;
+  gap: 2px;
+}
+
+.rail-items-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 2px;
+}
+
+.rail.collapsed .rail-items-container {
+  align-items: center;
+  gap: 8px;
+}
+
+.rail-item-wrapper,
+.rail-section-wrapper {
+  position: relative;
+  width: 100%;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.rail.collapsed .rail-item-wrapper {
+  width: 44px;
+  display: flex;
+  justify-content: center;
+}
+
+.rail-item-wrapper.is-dragging,
+.rail-section-wrapper.is-dragging {
+  opacity: 0.35;
+  transform: scale(0.98);
+}
+
+.rail-item-wrapper[draggable="true"] {
+  cursor: grab;
+}
+
+.rail-item-wrapper[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+/* ── Drag & Drop Insertion Indicator ──────────────────────────── */
+.rail-drop-indicator {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  height: 3px;
+  background: var(--rail-accent, #2E6BFF);
+  border-radius: 999px;
+  z-index: 50;
+  pointer-events: none;
+  box-shadow: 0 0 8px rgba(46, 107, 255, 0.7);
+  animation: drop-pulse 1s infinite alternate ease-in-out;
+}
+
+.rail-drop-indicator::before {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: -2.5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 2px solid var(--rail-accent, #2E6BFF);
+  box-shadow: 0 0 6px rgba(46, 107, 255, 0.8);
+}
+
+.rail-drop-indicator--before {
+  top: -3px;
+}
+
+.rail-drop-indicator--after {
+  bottom: -3px;
+}
+
+.rail.collapsed .rail-drop-indicator {
+  left: -2px;
+  right: -2px;
+}
+
+@keyframes drop-pulse {
+  0% { opacity: 0.8; transform: scaleY(0.9); }
+  100% { opacity: 1; transform: scaleY(1.1); }
+}
+
+/* ── Smooth FLIP Reordering Transition ────────────────────────── */
+.rail-list-move {
+  transition: transform 0.22s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.rail-list-enter-active,
+.rail-list-leave-active {
+  transition: all 0.2s ease;
+}
+
+.rail-list-enter-from,
+.rail-list-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.rail-item {
+  width: 100%;
+  height: 38px;
+  border-radius: var(--radius-md);
+  display: flex; align-items: center;
+  gap: 10px;
+  padding: 0 10px;
+  color: var(--rail-text);
+  position: relative;
+  flex-shrink: 0;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s, padding 0.15s;
+  box-sizing: border-box;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.rail-item.collapsed-item {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+/* Ensure all SVG and Lucide icons in primary and secondary sidebars inherit text color and stroke */
+.rail svg,
+.rail .lucide-icon,
+.secondary-sidebar svg,
+.secondary-sidebar .lucide-icon {
+  color: inherit !important;
+  stroke: currentColor !important;
+}
+
+.rail-item svg,
+.rail-item .lucide-icon,
+.rail-item .icon-svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.rail-item:hover { background: var(--rail-hover-bg); color: #FFFFFF; }
+.rail-item.active { background: var(--rail-active-bg); color: #FFFFFF; }
+/* Selected / open — a clean left accent bar (not a dot). */
+.rail-item.active::before {
+  content: "";
+  position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 20px; border-radius: 0 3px 3px 0;
+  background: #FFFFFF;
+}
+.rail.collapsed .rail-item.active::before { left: -2px; }
+
+.rail-item .rail-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  color: var(--rail-text-bright);
+  transition: color 0.15s ease;
+}
+.rail-item.active .rail-label { color: #FFFFFF; }
+
+.rail-item .rail-count {
+  font-size: 11px; font-weight: 600;
+  background: rgba(255,255,255,0.12); color: var(--rail-text-bright);
+  border-radius: 999px; padding: 1px 7px;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+.rail-item.active .rail-count { background: var(--rail-accent); color: var(--rail-bg); }
+.rail-item .rail-count.alert { background: var(--rail-alert); color: white; }
+
+.rail-item .rail-count.absolute-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: var(--fs-2xs); font-weight: 700;
+  border-radius: 999px; padding: 1px 5px;
+  line-height: 1.2;
+}
+
+.whatsapp-dot-badge {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--rail-accent);
+  flex-shrink: 0;
+}
+
+.whatsapp-dot-badge.absolute-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.rail-section-label {
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--rail-section-label);
+  padding: 12px 10px 4px;
+  cursor: default;
+}
+
+.rail-footer {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: stretch;
+}
+
+.rail.collapsed .rail-footer {
+  padding-top: 10px;
+  justify-content: center;
+  border-top: none;
+}
+
+.collapse-btn {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  justify-content: flex-start !important;
+  background: transparent !important;
+  border: none !important;
+  color: var(--rail-text) !important;
+  padding: 8px 12px !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  transition: background 0.15s, color 0.15s !important;
+  box-sizing: border-box !important;
+}
+
+.collapse-btn:hover {
+  background: rgba(255,255,255,0.06) !important;
+  color: #FFFFFF !important;
+}
+
+.rail.collapsed .collapse-btn {
+  width: 44px !important;
+  height: 44px !important;
+  padding: 0 !important;
+  justify-content: center !important;
+  margin: 0 auto !important;
+}
+
+.rail-chevron {
+  margin-left: auto;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rail-chevron.rotated {
+  transform: rotate(90deg);
+}
+
+/* ── Secondary Sidebar ────────────────────────────────────────────── */
+.secondary-sidebar {
+  width: 240px;
+  min-width: 240px;
+  background: var(--rail-secondary-bg);
+  border-right: 1px solid var(--rail-secondary-border);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 188px;
+  z-index: 105;
+  box-sizing: border-box;
+  transform: translateX(0);
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), left 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-right-color 0.22s ease;
+}
+
+.rail.collapsed ~ .secondary-sidebar {
+  left: 72px;
+}
+
+.secondary-sidebar.collapsed {
+  transform: translateX(-100%);
+  pointer-events: none;
+  border-right-color: transparent;
+}
+
+.secondary-sidebar-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 20px 14px;
+  box-sizing: border-box;
+  width: 240px;
+}
+
+.secondary-sidebar-header {
+  margin-bottom: 18px;
+  flex-shrink: 0;
+}
+
+.header-icon-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.header-icon-title .module-icon {
+  color: var(--rail-secondary-text);
+  flex-shrink: 0;
+}
+
+.header-icon-title .title-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.header-icon-title .module-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #FFFFFF;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.header-icon-title .module-subtitle {
+  font-size: var(--fs-2xs);
+  color: var(--rail-section-label);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+.header-icon-title .lock-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: transparent;
+  border: none;
+  color: var(--rail-section-label);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.header-icon-title .lock-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+}
+
+.secondary-sidebar-scroll {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  gap: 4px;
+  width: 100%;
+}
+.secondary-sidebar-scroll::-webkit-scrollbar { width: 4px; }
+.secondary-sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
+.secondary-sidebar-scroll::-webkit-scrollbar-thumb { background: var(--rail-scrollbar); border-radius: 2px; }
+.secondary-sidebar-scroll::-webkit-scrollbar-thumb:hover { background: var(--rail-scrollbar-hover); }
+.secondary-sidebar-scroll { scrollbar-width: thin; scrollbar-color: var(--rail-scrollbar) transparent; }
+
+.secondary-items-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.secondary-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 38px;
+  padding: 0 12px;
+  color: var(--rail-secondary-text);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.secondary-item svg,
+.secondary-item .lucide-icon,
+.secondary-item .icon-svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.secondary-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #FFFFFF;
+}
+
+.secondary-item.active {
+  background: var(--rail-active-bg);
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+/* Wrapper so the nav link and + create button sit side-by-side */
+.secondary-item-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  border-radius: 6px;
+}
+
+.secondary-item-wrapper .secondary-item {
+  flex: 1;
+  min-width: 0;
+}
+
+/* + create button — hidden by default, visible on row hover */
+.secondary-item-create {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  color: var(--rail-secondary-text);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.secondary-item-wrapper:hover .secondary-item-create {
+  opacity: 1;
+}
+
+.secondary-item-create:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+}
+
+
+.secondary-section-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.secondary-section-label {
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--rail-secondary-section-label);
+  padding: 8px 12px 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: color 0.15s;
+}
+
+.secondary-section-label:hover {
+  color: #FFFFFF;
+}
+
+.secondary-section-label .sec-chevron {
+  transition: transform 0.2s ease;
+  color: var(--rail-secondary-section-label);
+}
+
+.secondary-section-label:hover .sec-chevron {
+  color: #FFFFFF;
+}
+
+.secondary-section-label .sec-chevron.collapsed {
+  transform: rotate(-90deg);
+}
+
+.secondary-section-items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: 6px;
+}
+
+.secondary-sidebar-footer {
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+.secondary-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 8px 0;
+}
+
+.secondary-badge {
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--rail-text-bright);
+  border-radius: 999px;
+  padding: 1px 6px;
+  margin-left: auto;
+  line-height: 1.3;
+}
+
+.secondary-badge.alert {
+  background: var(--rail-alert);
+  color: white;
+}
+
+/* ── Mobile Hamburger Menu ───────────────────────────────────────── */
+.mobile-menu-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.mobile-menu-toggle:hover {
+  background: var(--bg-sunken);
+  color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-toggle {
+    display: inline-flex;
+  }
+}
+
+/* ── Responsive Visibility ────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+/* ── Mobile Drawer overlays ───────────────────────────────────────── */
+.mobile-drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+  display: flex;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.mobile-drawer-content {
+  display: flex;
+  height: 100%;
+  background: var(--rail-bg);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
+  animation: slideInLeft 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* ── Tablet Mode (768px - 1024px) ────────────────────────────────── */
+@media (max-width: 1024px) and (min-width: 768px) {
+  .rail {
+    width: 72px !important;
+    min-width: 72px !important;
+    padding: 18px 0 !important;
+    align-items: center !important;
+  }
+  
+  .rail-brand-container {
+    padding: 0 !important;
+    justify-content: center !important;
+  }
+  
+  .rail-brand-text {
+    display: none !important;
+  }
+  
+  .rail-section-label {
+    display: none !important;
+  }
+  
+  .rail-item {
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0 !important;
+    justify-content: center !important;
+    margin: 0 auto !important;
+  }
+  
+  .rail-item .rail-label {
+    display: none !important;
+  }
+  
+  .rail-item .rail-count:not(.absolute-badge) {
+    display: none !important;
+  }
+  
+  .rail-item .rail-count.absolute-badge {
+    display: block !important;
+  }
+  
+  .rail-item .whatsapp-dot-badge:not(.absolute-badge) {
+    display: none !important;
+  }
+  
+  .rail-item .whatsapp-dot-badge.absolute-badge {
+    display: block !important;
+  }
+  
+  .rail-footer {
+    padding-top: 10px !important;
+    justify-content: center !important;
+    border-top: none !important;
+  }
+  
+  .collapse-btn {
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0 !important;
+    justify-content: center !important;
+    margin: 0 auto !important;
+  }
+  
+  .collapse-text {
+    display: none !important;
+  }
+  
+  .secondary-sidebar {
+    display: flex !important;
+    left: 72px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .mobile-drawer-content .secondary-sidebar {
+    position: static !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
+    width: 240px !important;
+    min-width: 240px !important;
+    height: 100% !important;
+    border-right-width: 1px !important;
+    border-right-color: var(--rail-secondary-border) !important;
+  }
+  
+  .mobile-drawer-content .secondary-sidebar.collapsed {
+    display: none !important;
+  }
+}
+
+.topbar-module-badge {
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--brand-light);
+  color: var(--brand-dark);
+  padding: 2px 9px;
+  border-radius: 999px;
+  letter-spacing: 0.03em;
+  vertical-align: middle;
+}
+
+.topbar-breadcrumb {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+
+
+.main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.main.full-width {
+  width: 100%;
+}
+
+/* ── Topbar / Navbar ──────────────────────────────────────────────── */
+.topbar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  column-gap: 16px;
+  padding: 13px 24px;
+  min-height: 60px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-surface);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  box-sizing: border-box;
+}
+.topbar-title { flex-shrink: 0; grid-column: 1; }
+.topbar-title-row { display: flex; align-items: center; gap: 10px; }
+.topbar-title h1 { font-size: 17px; font-weight: 600; margin: 0; letter-spacing: -0.01em; color: var(--text-primary); }
+
+/* .topbar-search styles are scoped inside AppTopbar.vue */
+
+.topbar-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-left: auto; grid-column: 3; justify-content: flex-end; }
+.topbar-divider { width: 1px; height: 22px; background: var(--border); margin: 0 2px; }
+.topbar-bell-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background var(--motion-micro), color var(--motion-micro);
+}
+.topbar-bell-btn:hover { background: var(--bg-sunken); color: var(--text-primary); }
+.topbar-bell-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.topbar-bell-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--danger);
+  color: #FFFFFF;
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-sizing: border-box;
+}
+.topbar-avatar {
+  width: 34px !important;
+  height: 34px !important;
+  font-size: 12px !important;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 50% !important;
+  background: var(--brand) !important;
+  color: var(--text-on-brand) !important;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: opacity var(--motion-micro);
+}
+.topbar-avatar:hover { opacity: 0.85; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: 36px;
+  box-sizing: border-box;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border-radius: var(--radius-pill);
+  padding: 0 16px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background var(--motion-micro), border-color var(--motion-micro), color var(--motion-micro);
+}
+.btn:hover { background: var(--bg-sunken); border-color: var(--text-tertiary); }
+.btn .icon-svg { width: 15px; height: 15px; }
+/* One primary per view. Text colour follows --text-on-brand so it stays readable
+   whatever brand colour a tenant picks in Settings. */
+.btn-primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--text-on-brand) !important;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--brand) 30%, transparent), 0 2px 8px color-mix(in srgb, var(--brand) 18%, transparent);
+}
+.btn-primary:hover { background: var(--brand-dark); border-color: var(--brand-dark); }
+.btn-primary svg,
+.btn-primary .lucide-icon,
+.btn-primary * {
+  color: var(--text-on-brand) !important;
+  stroke: var(--text-on-brand) !important;
+}
+
+/* Prominent-but-not-primary. Grey fill MUST carry a strong border or it dissolves
+   into the page band (--bg-sunken ≈ --bg-page). */
+.btn-secondary {
+  background: var(--bg-sunken);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+.btn-secondary:hover:not(:disabled) { background: var(--border-strong); border-color: var(--border-strong); }
+.btn-tertiary { border-color: transparent; background: transparent; color: var(--text-secondary); }
+.btn-tertiary:hover { background: var(--bg-sunken); border-color: transparent; }
+.btn-destructive { background: var(--danger-bg); border-color: transparent; color: var(--danger); }
+.btn-destructive:hover { background: var(--danger-bg); filter: brightness(0.97); border-color: transparent; }
+.btn-sm { height: 30px; padding: 0 13px; font-size: 12px; }
+.btn-lg { height: 42px; padding: 0 24px; font-size: 14.5px; }
+/* AI action — gradient border on LIGHT surfaces; on a dark AI surface use .btn-ai-glow */
+.btn-ai { background: linear-gradient(var(--bg-surface), var(--bg-surface)) padding-box, linear-gradient(100deg, var(--glow), var(--accent-blue)) border-box; border: 1.5px solid transparent; color: var(--text-primary); }
+.btn-ai-glow { border-color: var(--glow); background: var(--glow); color: #052620; font-weight: 700; }
+.btn-ai-glow:hover { background: var(--glow); border-color: var(--glow); filter: brightness(1.08); }
+.btn-ghost-d { border-color: var(--ai-border); background: transparent; color: var(--ai-text); }
+.btn-ghost-d:hover { background: rgba(255,255,255,0.06); border-color: var(--ai-muted); }
+/* Disabled = white surface + strong border + muted text (never a grey fill) */
+.btn[disabled], .btn:disabled { background: var(--bg-surface); border-color: var(--border-strong); color: var(--text-tertiary); cursor: not-allowed; box-shadow: none; opacity: 1; }
+/* .btn-primary forces on-brand (white) text with !important, which left a disabled
+   primary button white-on-white — invisible. Disabled wins, at the same strength. */
+.btn-primary[disabled], .btn-primary:disabled,
+.btn-primary[disabled] *, .btn-primary:disabled * {
+  color: var(--text-tertiary) !important;
+  stroke: var(--text-tertiary) !important;
+}
+
+/* Selected chip / filter — ONE treatment: solid brand fill + on-brand text */
+.l-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border: 1px solid var(--border); border-radius: var(--radius-pill); background: var(--bg-surface); font-size: 12.5px; font-weight: 600; color: var(--text-secondary); cursor: pointer; font-family: inherit; transition: background var(--motion-micro), border-color var(--motion-micro), color var(--motion-micro); }
+.l-chip:hover { border-color: var(--border-strong); }
+.l-chip.is-active { background: var(--brand); border-color: var(--brand); color: var(--text-on-brand); }
+
+.icon-btn {
+  width: 36px; height: 36px;
+  box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  position: relative;
+  transition: background 0.1s;
+}
+.icon-btn:hover { background: var(--bg-sunken); }
+.icon-btn .icon-svg { width: 17px; height: 17px; }
+.icon-btn .dot {
+  position: absolute; top: 7px; right: 7px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--danger);
+  border: 1.5px solid var(--bg-surface);
+}
+
+.content {
+  padding-inline: var(--page-gutter, 28px);
+  padding-top: 24px;
+  padding-bottom: 96px;
+  width: 100%;
+  box-sizing: border-box;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.content.no-padding {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Global Component Primitives (Design Standard) ─────────────────── */
+/* Primary button: 10px rounded rectangle, navy var(--brand), 36px control height, 13px/600 */
+.l-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: var(--control-h, 36px);
+  border-radius: var(--radius-md, 10px);
+  font-size: var(--fs-sm, 13px);
+  font-weight: 600;
+  font-family: inherit;
+  line-height: 1;
+  padding: 0 16px;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  text-decoration: none;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  transition: background var(--motion-micro, 150ms ease-out),
+              border-color var(--motion-micro, 150ms ease-out),
+              color var(--motion-micro, 150ms ease-out),
+              box-shadow var(--motion-micro, 150ms ease-out);
+}
+
+.l-btn:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Primary Navy Button */
+.l-btn--primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--text-on-brand) !important;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--brand) 30%, transparent),
+              0 2px 8px color-mix(in srgb, var(--brand) 18%, transparent);
+}
+.l-btn--primary:hover:not(:disabled) {
+  background: var(--brand-dark);
+  border-color: var(--brand-dark);
+}
+.l-btn--primary svg,
+.l-btn--primary .icon-svg,
+.l-btn--primary .lucide-icon {
+  color: var(--text-on-brand) !important;
+  stroke: var(--text-on-brand) !important;
+}
+
+/* Secondary Button: White surface with 1px border-base */
+.l-btn--secondary {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-base, var(--border));
+  color: var(--text-primary);
+}
+.l-btn--secondary:hover:not(:disabled) {
+  background: var(--bg-sunken);
+  border-color: var(--border-strong);
+}
+
+/* Ghost Button: Transparent with hover */
+.l-btn--ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-secondary);
+}
+.l-btn--ghost:hover:not(:disabled) {
+  background: var(--bg-sunken);
+  color: var(--text-primary);
+}
+
+/* Danger Button */
+.l-btn--danger {
+  background: var(--danger-bg);
+  border-color: transparent;
+  color: var(--danger);
+}
+.l-btn--danger:hover:not(:disabled) {
+  background: var(--danger-bg);
+  border-color: var(--danger);
+  filter: brightness(0.97);
+}
+
+/* Small Button */
+.l-btn--sm {
+  height: 30px;
+  padding: 0 12px;
+  font-size: var(--fs-xs, 12px);
+  border-radius: var(--radius-input, 8px);
+}
+
+/* Button States */
+.l-btn:disabled,
+.l-btn[disabled],
+.l-btn.is-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+  box-shadow: none;
+}
+.l-btn.is-loading,
+.l-btn--loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+/* Input primitive: 38px, radius 8px, 13px, 1px border-base, focus ring, disabled, invalid */
+.l-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  height: var(--input-h, 38px);
+  border-radius: var(--radius-input, 8px);
+  font-size: var(--fs-sm, 13px);
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-base, var(--border));
+  padding: 0 12px;
+  outline: none;
+  transition: border-color var(--motion-micro, 150ms ease-out),
+              box-shadow var(--motion-micro, 150ms ease-out);
+}
+.l-input::placeholder {
+  color: var(--text-tertiary);
+}
+.l-input:focus,
+.l-input:focus-visible {
+  border-color: var(--brand);
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 15%, transparent);
+}
+.l-input:disabled,
+.l-input[disabled] {
+  background: var(--bg-sunken);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+.l-input.is-invalid,
+.l-input[aria-invalid="true"] {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 15%, transparent);
+}
+
+/* Card primitive: radius 16px, 1px border-soft, padding 20px, soft shadow token */
+.l-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg, 16px);
+  border: 1px solid var(--border-soft);
+  padding: 20px;
+  box-shadow: var(--shadow-card, 0 1px 2px rgba(0,0,0,0.02), 0 4px 16px rgba(0,0,0,0.04));
+  box-sizing: border-box;
+}
+
+/* Table header primitive: 12px/600, text-secondary, bg-sunken */
+.l-th {
+  font-size: var(--fs-xs, 12px);
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-sunken);
+  padding: 10px 14px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* Wide table horizontal scroll wrapper with edge fade cues */
+.l-table-scroll {
+  position: relative;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  background:
+    linear-gradient(to right, var(--bg-surface) 30%, rgba(255, 255, 255, 0)),
+    linear-gradient(to left, var(--bg-surface) 30%, rgba(255, 255, 255, 0)) 100% 0,
+    radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0)),
+    radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0)) 100% 0;
+  background-repeat: no-repeat;
+  background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+  background-attachment: local, local, scroll, scroll;
+}
+
+.icon-svg { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; vertical-align: -0.15em; display: inline-block; }
+
+/* AI Pill Badge — shared badge for AI triage and AI compliance */
+.aibadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-2xs, 11px);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--brand);
+  background: var(--status-success-bg);
+  padding: 3px 9px;
+  border-radius: var(--radius-pill, 999px);
+}
+.aibadge svg {
+  color: inherit;
+}
+
+/* ── Inbox Page ─────────────────────────────────────────────────── */
+.inbox-page-container {
+  width: 100%;
+  height: 100%;
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface, #ffffff);
+}
+
+.inbox-header {
+  padding: 24px 28px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.inbox-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.inbox-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 4px 0 0 0;
+}
+
+.inbox-layout-wrapper {
+  background: var(--bg-surface);
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.inbox-list-panel {
+  width: 320px;
+  min-width: 320px;
+  max-width: 320px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  background: var(--bg-surface);
+}
+
+.inbox-view-panel {
+  flex: 1;
+  min-width: 0;
+}
+
+.inbox-customer-panel {
+  width: 300px;
+  min-width: 300px;
+  max-width: 300px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  background: var(--bg-surface);
+}
+
+
+/* ── Reduced motion ───────────────────────────────────────────────────
+   The app ships a lot of transitions, spinners and slide-in panels and
+   had no `prefers-reduced-motion` support at all, which is an
+   accessibility problem for users with vestibular disorders. Collapse
+   animation globally rather than auditing every component: durations go
+   to ~0 instead of `animation: none` so JS that waits on `transitionend`
+   / `animationend` still fires and panels don't get stuck open. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Platform-preview surfaces ────────────────────────────────────────
+   Some components render a *picture of another product's UI* — a
+   Facebook/Google/LinkedIn ad unit, a Meta lead form, a provider OAuth
+   consent screen. Those keep a fixed white background in both themes,
+   because they are showing the user what the ad/form will look like on
+   that platform, not what our app looks like.
+
+   That fixed white is a trap for the token system: a descendant using
+   `var(--ink-900)` would resolve to near-white in dark mode and vanish.
+   Pinning the light palette on the preview root keeps every nested
+   token readable without rewriting each declaration. */
+.platform-preview {
+  --ink-900: #0f172a;
+  --ink-850: #1a2537;
+  --ink-800: #1e293b;
+  --ink-700: #334155;
+  --ink-600: #475569;
+  --ink-500: #64748b;
+  --ink-400: #94a3b8;
+  --ink-300: #94a3b8;
+  --ink-200: #cbd5e1;
+  --ink-100: #e2e8f0;
+  --ink-50: #f1f5f9;
+  --ink-25: #f8fafc;
+  --text-primary: #15181d;
+  --text-secondary: #5b6270;
+  --text-tertiary: #95999e;
+  --border: #e7e8ec;
+  --border-soft: #eff0f3;
+  --border-base: #e7e8ec;
+  --bg-surface: #ffffff;
+  --surface-surface: #ffffff;
+  --bg-page: #f6f7f9;
+  --bg-sunken: #f1f2f5;
+}
+
+/* frappe-ui's style.css sets `.form-input, .form-textarea, .form-select { height: 1.75rem }`,
+   which squashes our `<textarea class="form-textarea" rows="N">` to one line (BUG-018).
+   Let textareas size from `rows`; pages that set their own height still win (higher specificity). */
+textarea.form-textarea {
+  height: auto;
+}
+
+
+/* ── Skeleton shimmer (known layouts) ─────────────────────────────── */
+@keyframes lem-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+/* ── Legacy spinners → brand loader treatment ─────────────────────────
+   Dozens of components still hand-roll `animate-spin` rings/icons. Rather
+   than touching each one, they all inherit the brand's loader colour and
+   cadence here; new work uses <LLoader />. */
+.animate-spin { animation-duration: 0.8s; }
+
+/* ── Aivo mascot animations ───────────────────────────────────────────────────
+   The pose SVGs (AivoAvatar, inlined) carry their animation + transform-origin as
+   inline styles that reference these keyframes by name. They live in the brand
+   mascot guide's stylesheet, so they must be defined app-wide here or the SVGs
+   render frozen. Sourced verbatim from lemnia-brand-package Aivo Mascot Guide. */
+@keyframes aivo-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes aivo-ring { 0%,100% { transform: scaleX(1); opacity: 0.7; } 50% { transform: scaleX(0.8); opacity: 0.4; } }
+@keyframes aivo-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.06); } }
+@keyframes aivo-tip { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-5deg); } }
+@keyframes aivo-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+@keyframes aivo-hand-l { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-7px) rotate(-6deg); } }
+@keyframes aivo-hand-r { 0%,100% { transform: translateY(-6px) rotate(0deg); } 50% { transform: translateY(2px) rotate(6deg); } }
+@keyframes aivo-wisp { 0%,100% { transform: skewX(0deg); } 50% { transform: skewX(3deg); } }
+@keyframes aivo-orbit { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes aivo-twinkle { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.55; transform: scale(0.75); } }
+@keyframes aivo-dots { 0%, 60%, 100% { opacity: 0.25; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-4px); } }
+@keyframes aivo-zzz { 0% { opacity: 0; transform: translate(0,0) scale(0.7); } 25% { opacity: 1; } 100% { opacity: 0; transform: translate(14px,-30px) scale(1.15); } }
+@keyframes aivo-wave { 0%,100% { transform: rotate(-16deg); } 50% { transform: rotate(18deg); } }
+@keyframes aivo-cheer { 0%,100% { transform: translateY(2px) rotate(-8deg); } 50% { transform: translateY(-14px) rotate(10deg); } }
+@keyframes aivo-confetti { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 12% { opacity: 1; } 100% { transform: translateY(110px) rotate(230deg); opacity: 0; } }
+/* Down / broken / finale poses — used by <AivoActor> for the wait & error states. */
+@keyframes aivo-breathe { 0%,100% { transform: translateY(2px) scale(0.998); } 50% { transform: translateY(-2px) scale(1.004); } }
+@keyframes aivo-strain { 0%,100% { transform: translate(0,0) rotate(0deg); } 25% { transform: translate(-1.5px,1px) rotate(-0.6deg); } 75% { transform: translate(1.5px,1px) rotate(0.6deg); } }
+@keyframes aivo-slump { 0%,100% { transform: translateY(4px) rotate(-1deg); } 50% { transform: translateY(6px) rotate(-1.4deg); } }
+@keyframes aivo-reach { 0%,100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-10px) rotate(4deg); } }
+@keyframes aivo-reach-weak { 0%,100% { transform: translateY(1px) rotate(-2deg); } 50% { transform: translateY(-4px) rotate(2deg); } }
+@keyframes aivo-limp { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+@keyframes aivo-ring-broken { 0%,100% { transform: rotate(-4deg) translateY(0); } 50% { transform: rotate(3deg) translateY(-3px); } }
+@keyframes aivo-flicker { 0%,100% { opacity: .12; } 43% { opacity: .12; } 46% { opacity: .5; } 48% { opacity: .1; } 52% { opacity: .38; } 55% { opacity: .12; } }
+@keyframes aivo-pop { 0% { transform: scale(0.9); } 60% { transform: scale(1.06); } 100% { transform: scale(1); } }
+
+/* ── KPI card (Lemnia kit 04) — shared by KpiCard / MetricCard and any `.kpi-card` page ── */
+.kpi-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--motion-micro), border-color var(--motion-micro);
+}
+.kpi-card:hover { box-shadow: var(--shadow-md); }
+
+/* ── Motion ───────────────────────────────────────────────────────────
+   Page content fades in (200ms); never animate table re-sorts or numbers mid-edit. */
+@keyframes lem-fade-in { from { opacity: 0; } to { opacity: 1; } }
+.content > * { animation: lem-fade-in var(--motion-page); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}
+
+/* AI halo — soft teal pulse used by anything Aivo is "working" on. */
+@keyframes ai-soft-glow { 0%,100% { box-shadow: 0 0 0 2px rgba(45,200,182,0.14), 0 2px 10px rgba(45,200,182,0.16); } 50% { box-shadow: 0 0 0 3px rgba(45,200,182,0.34), 0 4px 22px rgba(45,200,182,0.34); } }
+
+/* Empty-state icon slots that now hold Aivo: drop the old glyph chrome (tint circles,
+   fixed sizes, opacity) so the mascot reads at his true size — never a tinted tile. */
+[class*="empty-icon"]:has(> .av), [class*="empty-ic"]:has(> .av), [class*="empty-glyph"]:has(> .av), [class*="empty-illustration"]:has(> .av) {
+  background: none !important; border: 0 !important; box-shadow: none !important;
+  width: auto !important; height: auto !important; opacity: 1 !important; margin: 0 auto 8px !important; display: flex !important; justify-content: center;
+}
+
+/* ── Secondary sidebar pushes the page instead of covering it ─────────
+   The panel is `position: fixed`, so the main column reserves its width while it is
+   open (and animates in step with it). Direct-child selector on purpose: the mobile
+   drawer nests its own copy, which is static and must not shift the page. */
+.main { transition: margin-left 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+@media (min-width: 769px) {
+  .app-shell:has(> .secondary-sidebar:not(.collapsed)) > .main {
+    margin-left: 240px;
+    width: auto;
+    min-width: 0;
+  }
+}
+
+/* Top bar stays on one line when the secondary panel narrows the page. */
+.topbar { grid-template-columns: minmax(0, 1fr) minmax(160px, 520px) minmax(0, 1fr); }
+/* Narrow screens: the actions column must keep its content width, so give up exact centering. */
+@media (max-width: 1099px) {
+  .topbar { grid-template-columns: minmax(0, 1fr) minmax(160px, 520px) auto; }
+}
+.topbar-title h1 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── Shimmer (loading placeholders) ───────────────────────────────────
+   One shimmer for every list / card / table. `.sk` is the primitive; `.skeleton` and
+   `.skeleton-*` are kept so pages that already use those class names pick the same
+   treatment up. Tokens only → follows light/dark and tenant themes. */
+.sk, .skeleton, .skeleton-line, .skel-line {
+  display: block;
+  background: linear-gradient(90deg, var(--bg-sunken) 25%, color-mix(in srgb, var(--bg-surface) 65%, var(--bg-sunken)) 50%, var(--bg-sunken) 75%);
+  background-size: 200% 100%;
+  animation: lem-shimmer 1.4s linear infinite;
+  border-radius: var(--radius-sm);
+  color: transparent !important;
+  pointer-events: none;
+}
+.sk-line { height: 12px; }
+.sk-line--sm { height: 9px; }
+.sk-line--xl { height: 26px; border-radius: var(--radius-md); }
+@media (prefers-reduced-motion: reduce) { .sk, .skeleton, .skeleton-line, .skel-line { animation: none; } }
+.shm-pad { padding: 12px 0; }
+
+/* ── Dark-mode safety nets ────────────────────────────────────────────── */
+/* Module badge in the top bar: brand-dark text on a tinted chip is unreadable on dark. */
+[data-theme='dark'] .topbar-module-badge { color: var(--ink-700); }
+
+/* Platform previews (Meta lead form, ad / creative previews, WhatsApp phone frame, OAuth mock)
+   imitate someone else's UI, which is always light. Re-pin the neutral tokens inside them so
+   token-based colours stay legible when the app itself is dark. */
+.platform-preview, .phone-frame, .wa-chat-bg, .wa-message-content, [class^="wa-msg"] {
+  color-scheme: light;
+  color: #15181D;
+  --bg-surface: #FFFFFF; --bg-page: #F6F7F9; --bg-sunken: #F1F2F5;
+  --text-primary: #15181D; --text-secondary: #5B6270; --text-tertiary: #95999E;
+  --border: #E7E8EC; --border-soft: #EFF0F3; --border-strong: #C7CDD6;
+  --ink-900: #0F172A; --ink-850: #1A2537; --ink-800: #1E293B; --ink-700: #334155; --ink-600: #475569;
+  --ink-500: #64748B; --ink-400: #94A3B8; --ink-300: #94A3B8; --ink-200: #CBD5E1; --ink-100: #E2E8F0;
+  --ink-50: #F1F5F9; --ink-25: #F8FAFC;
+}
+.um-backdrop { position: fixed; inset: 0; z-index: 1090; }
+
+/* ── Page background: soft gradient + fine vertical hairlines (Lemnia brand) ──────────
+   Every screen sits on this. Built from --bg-page / --brand, so a tenant's page colour
+   from Settings → Theme & branding carries through, and dark mode gets its own quieter
+   version. The hairlines are a 3px-period repeating gradient (1px line, 2px gap). */
+:root {
+  --pattern-line: rgba(255, 255, 255, 0.4);
+  --pattern-tint: color-mix(in srgb, var(--brand) 1.2%, transparent);
+  --page-g1: color-mix(in srgb, var(--bg-page) 60%, white);
+  --page-g2: var(--bg-page);
+  --page-g3: color-mix(in srgb, var(--bg-page) 93%, var(--brand));
+}
+[data-theme='dark'] {
+  --pattern-line: rgba(255, 255, 255, 0.022);
+  --pattern-tint: transparent;
+  --page-g1: color-mix(in srgb, var(--bg-page) 95%, white);
+  --page-g2: var(--bg-page);
+  --page-g3: color-mix(in srgb, var(--bg-page) 88%, black);
+}
+html {
+  background:
+    repeating-linear-gradient(90deg, var(--pattern-line) 0 1px, var(--pattern-tint) 1px 3px) fixed,
+    linear-gradient(118deg, var(--page-g1) 0%, var(--page-g2) 60%, var(--page-g3) 100%) fixed;
+}
+body, #app { background: transparent; }
+@media (prefers-reduced-transparency: reduce) { html { background: var(--bg-page); } }
+
+/* Inline brand icon replacing an emoji in running text */
+.ei { display: inline-block; vertical-align: -0.15em; flex-shrink: 0; }
+
+/* ── Aivo "soft" surfaces (Lemnia): a quiet teal-tinted band + its breathing CTA ──────────
+   Used for the Home "Ask Aivo" strip. Token-built so it follows light/dark and theme colours. */
+.ai-soft { background: linear-gradient(100deg, color-mix(in srgb, var(--accent-teal) 9%, var(--bg-surface)), color-mix(in srgb, var(--accent-blue) 5%, var(--bg-surface))); border: 1px solid color-mix(in srgb, var(--accent-teal) 38%, var(--border)); border-radius: var(--radius-lg); box-shadow: 0 0 0 1px color-mix(in srgb, var(--glow) 13%, transparent), 0 1px 12px color-mix(in srgb, var(--glow) 10%, transparent); }
+.btn-ai-soft { background: var(--bg-surface); border: 1px solid color-mix(in srgb, var(--accent-teal) 55%, var(--border)); color: var(--accent-teal); font-weight: 700; animation: ai-soft-glow 2.6s ease-in-out infinite; }
+.btn-ai-soft:hover { border-color: var(--accent-teal); }
+@media (prefers-reduced-motion: reduce) { .btn-ai-soft { animation: none; } }
+
+/* Segmented control (Lemnia .l-segment): grey track with a strong border so it holds on the page band */
+.l-segment { display: inline-flex; background: var(--bg-sunken); border: 1px solid var(--border-strong); border-radius: var(--radius-pill); padding: 3px; gap: 2px; }
+.l-segment button { display: inline-flex; align-items: center; gap: 6px; font-family: inherit; font-size: 12px; font-weight: 700; border: none; background: none; color: var(--text-secondary); padding: 5px 12px; border-radius: var(--radius-pill); cursor: pointer; white-space: nowrap; transition: background var(--motion-micro), color var(--motion-micro); }
+.l-segment button.is-active { background: var(--bg-surface); color: var(--text-primary); box-shadow: var(--shadow-sm); }
+
+/* ── Inbox channel looks (WhatsApp / Instagram DM / Facebook DM) ─────────────
+   Components read the --ch-* tokens only. Defaults follow the theme bubble
+   colours, so channels without a dedicated look are unchanged. The
+   .inbox-ch-* classes (see modules/inbox/utils/channelTheme.js) switch them. */
+:root {
+  --inbox-wa-out: #D9FDD3;
+  --inbox-wa-in: #FFFFFF;
+  --inbox-wa-text: #111B21;
+  --inbox-wa-bg: #EFE7DD;
+  --inbox-ig-out: linear-gradient(120deg, #5B51D8, #C13584 58%, #CC4A1E);
+  --inbox-ig-in: linear-gradient(120deg, #E8E6FA, #F8E1EE 58%, #FDE6DA);
+  --inbox-ig-text: #1B1B1F;
+  --inbox-fb-out: #0072E6;
+  --inbox-fb-in: #F0F0F0;
+  --inbox-fb-text: #050505;
+  --inbox-on-colour: #FFFFFF;
+
+  --ch-bubble-out: var(--inbox-bubble-out);
+  --ch-bubble-out-text: var(--text-primary);
+  --ch-bubble-in: var(--inbox-bubble-in);
+  --ch-bubble-in-text: var(--text-primary);
+  --ch-bubble-radius: 16px;
+  --ch-thread-bg: var(--bg-surface);
+  --ch-accent: var(--brand);
+  --ch-tint-bg: var(--bg-sunken);
+  --ch-tint-fg: var(--text-primary);
+  --ch-tint-border: var(--border);
+}
+.inbox-ch-wa {
+  --ch-bubble-out: var(--inbox-wa-out);
+  --ch-bubble-out-text: var(--inbox-wa-text);
+  --ch-bubble-in: var(--inbox-wa-in);
+  --ch-bubble-in-text: var(--inbox-wa-text);
+  --ch-bubble-radius: 12px;
+  --ch-thread-bg: var(--inbox-wa-bg);
+  --ch-accent: var(--channel-whatsapp);
+  --ch-tint-bg: color-mix(in srgb, var(--channel-whatsapp) 12%, var(--bg-surface));
+  --ch-tint-fg: color-mix(in srgb, var(--channel-whatsapp) 70%, var(--text-primary));
+  --ch-tint-border: color-mix(in srgb, var(--channel-whatsapp) 40%, var(--bg-surface));
+}
+.inbox-ch-ig {
+  --ch-bubble-out: var(--inbox-ig-out);
+  --ch-bubble-out-text: var(--inbox-on-colour);
+  --ch-bubble-in: var(--inbox-ig-in);
+  --ch-bubble-in-text: var(--inbox-ig-text);
+  --ch-bubble-radius: 20px;
+  --ch-accent: var(--channel-instagram);
+  --ch-tint-bg: color-mix(in srgb, var(--channel-instagram) 10%, var(--bg-surface));
+  --ch-tint-fg: color-mix(in srgb, var(--channel-instagram) 85%, var(--text-primary));
+  --ch-tint-border: color-mix(in srgb, var(--channel-instagram) 40%, var(--bg-surface));
+}
+.inbox-ch-fb {
+  --ch-bubble-out: var(--inbox-fb-out);
+  --ch-bubble-out-text: var(--inbox-on-colour);
+  --ch-bubble-in: var(--inbox-fb-in);
+  --ch-bubble-in-text: var(--inbox-fb-text);
+  --ch-bubble-radius: 18px;
+  --ch-accent: var(--channel-facebook);
+  --ch-tint-bg: color-mix(in srgb, var(--channel-facebook) 10%, var(--bg-surface));
+  --ch-tint-fg: color-mix(in srgb, var(--channel-facebook) 85%, var(--text-primary));
+  --ch-tint-border: color-mix(in srgb, var(--channel-facebook) 40%, var(--bg-surface));
+}
+[data-theme='dark'] {
+  --inbox-wa-out: #144D37;
+  --inbox-wa-in: #202C33;
+  --inbox-wa-text: #E9EDEF;
+  --inbox-wa-bg: #0B141A;
+  --inbox-ig-in: linear-gradient(120deg, #2A2740, #3A2336 58%, #3D2A22);
+  --inbox-ig-text: #F5F5F5;
+  --inbox-fb-in: #3A3B3C;
+  --inbox-fb-text: #E4E6EB;
+}

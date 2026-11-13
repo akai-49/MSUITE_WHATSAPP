@@ -55,16 +55,22 @@ msuite_inbox_channels = {"WhatsApp": "msuite_whatsapp.services.channels.inbox_ch
 campaign_channel_adapters = ["msuite_whatsapp.services.channels.campaign_adapter.ADAPTER"]
 
 # CRM's WhatsApp tab (`WhatsAppArea.vue` + `WhatsAppBox.vue`) calls the
-# four methods below. Our overrides funnel every send through
+# methods below. The first two make CRM show the tab. Our overrides funnel every send through
 # `inbox.services.outbound.send_to_phone` and every read off `Channel
 # Message`, so the CRM frontend keeps working unchanged while the data
 # layer is unified with the Inbox SPA.
 override_whitelisted_methods = {
+	"crm.api.whatsapp.is_whatsapp_enabled": "msuite_whatsapp.api.v1.crm.whatsapp.is_whatsapp_enabled",
+	"crm.api.whatsapp.is_whatsapp_installed": "msuite_whatsapp.api.v1.crm.whatsapp.is_whatsapp_installed",
 	"crm.api.whatsapp.create_whatsapp_message": "msuite_whatsapp.api.v1.crm.whatsapp.create_whatsapp_message",
 	"crm.api.whatsapp.send_whatsapp_template": "msuite_whatsapp.api.v1.crm.whatsapp.send_whatsapp_template",
 	"crm.api.whatsapp.react_on_whatsapp_message": "msuite_whatsapp.api.v1.crm.whatsapp.react_on_whatsapp_message",
 	"crm.api.whatsapp.get_whatsapp_messages": "msuite_whatsapp.api.v1.crm.whatsapp.get_whatsapp_messages",
 }
+
+# Frappe CRM's /crm page, served with the msuite WhatsApp panel added to the Lead and Deal
+# WhatsApp tab. The panel is built from `frontend/` (`cd frontend && npm run build`).
+page_renderer = ["msuite_whatsapp.crm_tab.renderer.CRMPageWithWhatsApp"]
 
 scheduler_events = {
 	"cron": {

@@ -1,0 +1,84 @@
+/* Layout of the panel inside Frappe CRM's WhatsApp tab panel (see crmHost.js). */
+
+/* A msuite screen is open: hide CRM's own chat and give the tab to the screen. */
+[data-msuite-wa='page'] > :not(#msuite-wa-root) {
+  display: none !important;
+}
+[data-msuite-wa='page'] > #msuite-wa-root {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+#msuite-wa-root {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.msuite-wa .mwa-shell {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.msuite-wa .mwa-nav {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 8px 20px;
+  border-bottom: 1px solid var(--outline-gray-1, #ededed);
+  scrollbar-width: none;
+}
+.msuite-wa .mwa-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.msuite-wa .mwa-nav-item {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--ink-gray-6, #525252);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.msuite-wa .mwa-nav-item:hover {
+  background: var(--surface-gray-2, #f3f3f3);
+  color: var(--ink-gray-8, #262626);
+}
+.msuite-wa .mwa-nav-item.is-active {
+  background: var(--surface-gray-3, #ededed);
+  color: var(--ink-gray-9, #171717);
+  font-weight: 500;
+}
+
+.msuite-wa .mwa-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 12px 20px 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  background: var(--surface-amber-2, #fff7e0);
+  color: var(--ink-amber-3, #7a4b00);
+}
+.msuite-wa .mwa-banner-action {
+  font-weight: 600;
+  text-decoration: underline;
+  color: inherit;
+}
+
+.msuite-wa .mwa-page {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 20px 24px 64px;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}

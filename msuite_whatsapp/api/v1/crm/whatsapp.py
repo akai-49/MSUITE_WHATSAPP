@@ -28,6 +28,53 @@ purely at the RPC boundary.
 import frappe
 from frappe import _
 
+# ── Tab visibility ──────────────────────────────────────────────────────
+
+
+@frappe.whitelist()
+def is_whatsapp_enabled() -> bool:
+	"""Show CRM's WhatsApp tab on Lead and Deal pages.
+
+	CRM's own check needs a default outgoing account in WhatsApp Settings. The tab also holds
+	the msuite WhatsApp screens (accounts, templates, broadcasts …; see `crm_tab/renderer.py`),
+	so it is shown before an account is set up. Each screen checks its own permissions.
+	"""
+	return frappe.session.user != "Guest"
+
+
+@frappe.whitelist()
+def is_whatsapp_installed() -> bool:
+	"""msuite_whatsapp provides WhatsApp to CRM; the frappe_whatsapp app is not needed."""
+	return True
+
+
+# Lemnia's page for connecting accounts, served by msuite_frontend.
+CONNECTIONS_URL = "/msuite/connections"
+
+
+@frappe.whitelist()
+def get_setup_status() -> dict:
+	"""Whether WhatsApp can send yet, for the banner in the CRM tab's Chat view."""
+	return {
+		"connected": _has_whatsapp_inbox(),
+		"connect_url": CONNECTIONS_URL if "msuite_frontend" in frappe.get_installed_apps() else None,
+	}
+
+
+def _has_whatsapp_inbox() -> bool:
+	"""msuite_inbox sends through an Active WhatsApp inbox. It creates one when a WhatsApp
+	Account becomes Active (`inbox_connector.sync_whatsapp_account_to_inbox`)."""
+	return bool(frappe.db.exists("Inbox", {"channel_type": "WhatsApp", "status": "Active"}))
+
+
+def _require_whatsapp_inbox() -> None:
+	if not _has_whatsapp_inbox():
+		frappe.throw(
+			_("No WhatsApp account is connected. Connect a WhatsApp account, then send again."),
+			title=_("WhatsApp not connected"),
+		)
+
+
 # ── Read surface ────────────────────────────────────────────────────────
 
 
@@ -210,6 +257,9 @@ def create_whatsapp_message(
 		payload["type"] = "text"
 		payload["text"] = message or ""
 
+	if channel_type == "WhatsApp":
+		_require_whatsapp_inbox()
+
 	from msuite_inbox.inbox.services.outbound import send_message
 
 	return send_message(
@@ -230,6 +280,8 @@ def send_whatsapp_template(reference_doctype, reference_name, template, to, body
 				_("No permission to access {0} {1}").format(reference_doctype, reference_name),
 				frappe.PermissionError,
 			)
+
+	_require_whatsapp_inbox()
 
 	from msuite_inbox.inbox.services.outbound import send_message
 

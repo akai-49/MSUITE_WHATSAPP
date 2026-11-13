@@ -1,0 +1,179 @@
+/* Frappe CRM look for the copied Lemnia WhatsApp screens.
+
+   The screens style themselves with Lemnia's design tokens (`--bg-page`, `--brand`,
+   `--text-primary` …). Here every one of them points at a frappe-ui token from Frappe CRM's own
+   stylesheet. frappe-ui switches those tokens for dark mode, so the screens follow CRM's
+   light / dark theme too. Loaded after lemnia.css, so these values win. */
+
+:root,
+[data-theme='light'],
+[data-theme='dark'] {
+  /* Surfaces */
+  --bg-page: var(--surface-base);
+  --bg-surface: var(--surface-base);
+  --bg-card: var(--surface-base);
+  --bg-rail: var(--surface-base);
+  --bg-sunken: var(--surface-gray-2);
+  --bg-hover: var(--surface-gray-2);
+  --surface-page: var(--surface-base);
+  --surface-bg: var(--surface-base);
+  --surface-surface: var(--surface-base);
+  --surface-sunken: var(--surface-gray-2);
+  --surface-surface-dark: var(--surface-gray-2);
+  --surface-rail: var(--surface-base);
+
+  /* Text */
+  --text-primary: var(--ink-gray-9);
+  --text-secondary: var(--ink-gray-6);
+  --text-tertiary: var(--ink-gray-5);
+  --text-muted: var(--ink-gray-5);
+  --text-on-brand: var(--ink-base);
+
+  /* Borders */
+  --border: var(--outline-gray-2);
+  --border-base: var(--outline-gray-2);
+  --border-color: var(--outline-gray-2);
+  --border-medium: var(--outline-gray-2);
+  --border-subtle: var(--outline-gray-1);
+  --border-soft: var(--outline-gray-1);
+  --border-strong: var(--outline-gray-3);
+  --border-dark: var(--outline-gray-3);
+
+  /* Brand: frappe-ui's solid gray Button, Frappe CRM's primary action (black, white in dark mode). */
+  --brand: var(--surface-gray-10);
+  --brand-dark: var(--surface-gray-9);
+  --brand-color: var(--surface-gray-10);
+  --primary: var(--surface-gray-10);
+  --accent: var(--surface-gray-10);
+  --brand-light: var(--surface-gray-2);
+  --brand-lighter: var(--surface-gray-1);
+  --brand-25: var(--surface-gray-1);
+  --brand-50: var(--surface-gray-1);
+  --brand-100: var(--surface-gray-2);
+  --brand-200: var(--surface-gray-3);
+  --brand-300: var(--ink-gray-4);
+  --brand-400: var(--ink-gray-5);
+  --brand-500: var(--ink-gray-8);
+  --brand-600: var(--ink-gray-9);
+  --brand-700: var(--ink-gray-9);
+  --brand-800: var(--ink-gray-9);
+  --accent-teal: var(--ink-green-6);
+  --accent-teal-on-light: var(--ink-green-7);
+  --accent-blue: var(--ink-blue-6);
+  --glow: var(--ink-gray-4);
+
+  /* Lemnia's slate scale */
+  --ink-25: var(--surface-gray-1);
+  --ink-50: var(--surface-gray-2);
+  --ink-100: var(--outline-gray-2);
+  --ink-200: var(--outline-gray-3);
+  --ink-300: var(--ink-gray-4);
+  --ink-400: var(--ink-gray-4);
+  --ink-500: var(--ink-gray-5);
+  --ink-600: var(--ink-gray-6);
+  --ink-700: var(--ink-gray-7);
+  --ink-800: var(--ink-gray-8);
+  --ink-850: var(--ink-gray-9);
+  --ink-900: var(--ink-gray-9);
+  --slate-500: var(--ink-gray-5);
+
+  /* The Lemnia "AI" band (dark navy) becomes a plain CRM card. */
+  --ai-bg: var(--surface-gray-1);
+  --ai-panel: var(--surface-base);
+  --ai-border: var(--outline-gray-2);
+  --ai-label: var(--ink-gray-6);
+  --ai-text: var(--ink-gray-8);
+  --ai-muted: var(--ink-gray-5);
+  --ai-inset: var(--surface-gray-2);
+
+  /* State */
+  --success: var(--ink-green-7);
+  --success-bg: var(--surface-green-2);
+  --warning: var(--ink-amber-7);
+  --warning-bg: var(--surface-amber-2);
+  --danger: var(--ink-red-7);
+  --danger-bg: var(--surface-red-2);
+  --info-bg: var(--surface-blue-2);
+  --state-success: var(--success);
+  --state-success-bg: var(--success-bg);
+  --state-success-border: var(--outline-green-3);
+  --state-warning: var(--warning);
+  --state-warning-bg: var(--warning-bg);
+  --state-warning-border: var(--outline-amber-3);
+  --state-danger: var(--danger);
+  --state-danger-bg: var(--danger-bg);
+  --state-danger-border: var(--outline-red-3);
+  --danger-border: var(--outline-red-3);
+  --status-success-bg: var(--surface-green-2); --status-success-text: var(--ink-green-8); --status-success-dot: var(--ink-green-5);
+  --status-warning-bg: var(--surface-amber-2); --status-warning-text: var(--ink-amber-8); --status-warning-dot: var(--ink-amber-5);
+  --status-danger-bg: var(--surface-red-2);    --status-danger-text: var(--ink-red-8);    --status-danger-dot: var(--ink-red-5);
+  --status-neutral-bg: var(--surface-gray-2);  --status-neutral-text: var(--ink-gray-6);  --status-neutral-dot: var(--ink-gray-4);
+  --status-info-bg: var(--surface-blue-2);     --status-info-text: var(--ink-blue-8);     --status-info-dot: var(--ink-blue-5);
+
+  /* Status pills, as frappe-ui's subtle Badge colours them. */
+  --status-gray-bg: var(--surface-gray-2);     --status-gray-fg: var(--ink-gray-6);     --status-gray-dot: var(--ink-gray-4);
+  --status-blue-bg: var(--surface-blue-2);     --status-blue-fg: var(--ink-blue-8);     --status-blue-dot: var(--ink-blue-5);
+  --status-orange-bg: var(--surface-orange-2); --status-orange-fg: var(--ink-orange-8); --status-orange-dot: var(--ink-orange-5);
+  --status-amber-bg: var(--surface-amber-2);   --status-amber-fg: var(--ink-amber-8);   --status-amber-dot: var(--ink-amber-5);
+  --status-yellow-bg: var(--surface-yellow-2); --status-yellow-fg: var(--ink-yellow-8); --status-yellow-dot: var(--ink-yellow-5);
+  --status-green-bg: var(--surface-green-2);   --status-green-fg: var(--ink-green-8);   --status-green-dot: var(--ink-green-5);
+  --status-teal-bg: var(--surface-teal-2);     --status-teal-fg: var(--ink-teal-8);     --status-teal-dot: var(--ink-teal-5);
+  --status-cyan-bg: var(--surface-cyan-2);     --status-cyan-fg: var(--ink-cyan-8);     --status-cyan-dot: var(--ink-cyan-5);
+  --status-red-bg: var(--surface-red-2);       --status-red-fg: var(--ink-red-8);       --status-red-dot: var(--ink-red-5);
+  --status-pink-bg: var(--surface-pink-2);     --status-pink-fg: var(--ink-pink-8);     --status-pink-dot: var(--ink-pink-5);
+  --status-purple-bg: var(--surface-purple-2); --status-purple-fg: var(--ink-purple-8); --status-purple-dot: var(--ink-purple-5);
+  --status-violet-bg: var(--surface-violet-2); --status-violet-fg: var(--ink-violet-8); --status-violet-dot: var(--ink-violet-5);
+
+  /* Lemnia's own red / green / amber literals used by some pages */
+  --green-500: var(--ink-green-5);
+  --green-600: var(--ink-green-6);
+  --green-700: var(--ink-green-7);
+  --emerald-500: var(--ink-green-6);
+  --orange-500: var(--ink-orange-5);
+  --amber-700: var(--ink-amber-7);
+  --amber-800: var(--ink-amber-8);
+  --red-300: var(--ink-red-3);
+  --red-500: var(--ink-red-5);
+  --red-600: var(--ink-red-6);
+  --red-700: var(--ink-red-7);
+  --rose-500: var(--ink-red-5);
+
+  /* Type, shape and depth: Frappe CRM uses Inter, 8px radii and nearly flat cards. */
+  --font-sans: InterVar, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-stack: var(--font-sans);
+  --radius-input: 8px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --control-h: 28px;
+  --input-h: 28px;
+  --shadow-sm: none;
+  --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-card: none;
+  --shadow-panel: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Buttons sized and weighted like frappe-ui's Button. */
+.l-btn {
+  height: 28px;
+  padding: 0 10px;
+  gap: 6px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 400;
+}
+.l-btn--primary {
+  box-shadow: none;
+}
+.l-btn--primary:hover:not(:disabled) {
+  background: var(--surface-gray-9);
+  border-color: var(--surface-gray-9);
+}
+.l-btn--secondary {
+  background: var(--surface-gray-2);
+  border-color: transparent;
+}
+.l-btn--secondary:hover:not(:disabled) {
+  background: var(--surface-gray-3);
+  border-color: transparent;
+}
