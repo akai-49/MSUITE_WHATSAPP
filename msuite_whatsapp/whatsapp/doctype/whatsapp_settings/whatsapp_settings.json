@@ -8,7 +8,9 @@
     "field_order": [
         "default_incoming_account",
         "column_break_xsuw",
-        "default_outgoing_account"
+        "default_outgoing_account",
+        "section_break_consent",
+        "require_marketing_opt_in"
     ],
     "fields": [
         {
@@ -22,6 +24,18 @@
             "fieldtype": "Link",
             "label": "Default Outgoing Account",
             "options": "WhatsApp Account"
+        },
+        {
+            "fieldname": "section_break_consent",
+            "fieldtype": "Section Break",
+            "label": "Consent"
+        },
+        {
+            "default": "1",
+            "description": "When on, automations skip MARKETING templates for contacts without a recorded WhatsApp opt-in.",
+            "fieldname": "require_marketing_opt_in",
+            "fieldtype": "Check",
+            "label": "Require opt-in for marketing templates"
         }
     ],
     "grid_page_length": 50,

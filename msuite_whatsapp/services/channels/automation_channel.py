@@ -10,6 +10,49 @@ def claim_send_slot(account: str | None, recipient: str) -> bool:
 	return claim_for_account(account, recipient)
 
 
+def _phone_candidates(phone: str) -> list[str]:
+	"""Spellings of a phone number or BSUID that stored handles may use (raw, digits, +digits)."""
+	clean = str(phone).strip()
+	digits = "".join(c for c in clean if c.isdigit())
+	return list({clean, digits, f"+{digits}"} - {"", "+"})
+
+
+def has_marketing_consent(phone: str) -> bool:
+	"""Check if a recorded positive WhatsApp opt-in exists for a phone number or BSUID.
+
+	Consent means a Channel Handle with opted_in = 1 (matched on platform handle or
+	BSUID), or a Contact (phone_e164 / mobile_no / phone) that is not unsubscribed
+	from WhatsApp and has consent_updated_at set. An opt-out always wins.
+
+	Args:
+		phone: Recipient phone number or BSUID.
+
+	Returns:
+		bool: True when consent is recorded and the recipient is not opted out.
+
+	Raises:
+		None.
+
+	Side Effects:
+		None.
+	"""
+	import frappe
+
+	if not phone or is_opted_out(phone):
+		return False
+	candidates = _phone_candidates(phone)
+	for field in ("platform_handle", "bsuid"):
+		if frappe.db.exists("Channel Handle", {"channel_type": "WhatsApp", field: ["in", candidates], "opted_in": 1}):
+			return True
+	for field in ("phone_e164", "mobile_no", "phone"):
+		if frappe.db.exists(
+			"Contact",
+			{field: ["in", candidates], "unsubscribed_whatsapp": 0, "consent_updated_at": ["is", "set"]},
+		):
+			return True
+	return False
+
+
 def is_opted_out(phone: str) -> bool:
 	"""Check if a phone number or handle is opted out of WhatsApp.
 
@@ -35,9 +78,7 @@ def is_opted_out(phone: str) -> bool:
 	import json
 	import frappe
 
-	clean = str(phone).strip()
-	digits = "".join(c for c in clean if c.isdigit())
-	candidates = list({clean, digits, f"+{digits}"} - {"", "+"})
+	candidates = _phone_candidates(phone)
 	handles = frappe.get_all(
 		"Channel Handle",
 		filters={"channel_type": "WhatsApp", "platform_handle": ["in", candidates]},
