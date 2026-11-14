@@ -8,7 +8,7 @@ app_license = "mit"
 # Apps
 # ------------------
 
-required_apps = ["frappe", "msuite_core", "msuite_campaigns", "msuite_inbox"]
+required_apps = []
 
 before_install = "msuite_whatsapp.install.before_install"
 
