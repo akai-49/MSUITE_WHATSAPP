@@ -20,7 +20,7 @@ import frappe
 from frappe.rate_limiter import rate_limit
 
 from msuite_whatsapp.services.calls import call_service
-from msuite_core.services.permissions.roles import ADMIN, INBOX_AGENT, INBOX_MANAGER, SYSTEM_MANAGER
+from msuite_whatsapp.services.permissions.roles import ADMIN, INBOX_AGENT, INBOX_MANAGER, SYSTEM_MANAGER
 
 CALL_ACTION_ROLES = (SYSTEM_MANAGER, ADMIN, INBOX_MANAGER, INBOX_AGENT)
 
@@ -37,7 +37,7 @@ def _require_call_role():
 def handle_call_webhook(**kwargs):
 	"""Receive forwarded call webhooks from the provider. Authenticated
 	via provider auth headers."""
-	from msuite_core.integrations.provider_auth import validate_provider_auth
+	from msuite_whatsapp.integrations.provider_auth import validate_provider_auth
 
 	validate_provider_auth()
 

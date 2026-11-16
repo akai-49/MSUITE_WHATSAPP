@@ -22,7 +22,7 @@ import frappe
 import requests
 from frappe import _
 
-from msuite_core.constants import LOGGER_NAME
+from msuite_whatsapp.constants import LOGGER_NAME
 from msuite_whatsapp.queries import account_repository as accounts
 
 STATUS_FIELDS = "verified_name,code_verification_status,display_phone_number,quality_rating"

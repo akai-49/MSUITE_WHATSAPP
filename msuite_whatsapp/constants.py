@@ -1,11 +1,37 @@
 """msuite_whatsapp constants."""
 
-from msuite_core.constants import (
-	LOCAL_FILE_URL_PREFIXES,
-	META_SYNC_INTER_ACCOUNT_DELAY,
-	MM_PRODUCT_TYPE,
-	REQUEST_TIMEOUT,
-)
+# ── Decoupled Standalone Constants ───────────────────────────────────────
+GRAPH_API_VERSION = "v26.0"
+GRAPH_API_URL = "https://graph.facebook.com"
+GRAPH_API_BASE = f"https://graph.facebook.com/{GRAPH_API_VERSION}"
+LOGGER_NAME = "msuite_whatsapp"
+REQUEST_TIMEOUT = 30
+MM_PRODUCT_TYPE = "whatsapp"
+INSIGHT_DELETE_BATCH = 1000
+LOCAL_FILE_URL_PREFIXES = ("/files/", "/private/files/")
+META_SYNC_INTER_ACCOUNT_DELAY = 1.0
+SECONDS_PER_MINUTE = 60
+WHATSAPP_INTERACTIVE_BODY_MAX = 1024
+WHATSAPP_FLOW_CTA_MAX = 20
+WHATSAPP_PRODUCT_CAROUSEL_MIN = 2
+WHATSAPP_PRODUCT_CAROUSEL_MAX = 10
+HTTP_STATUS_UNAUTHORIZED = 401
+HTTP_STATUS_FORBIDDEN = 403
+
+
+class AccountStatus:
+	ACTIVE = "Active"
+	EXPIRED = "Expired"
+	REVOKED = "Revoked"
+	RECONNECT_REQUIRED = "Reconnect Required"
+
+
+class CallDirection:
+	INCOMING = "Incoming"
+	OUTGOING = "Outgoing"
+	INBOUND = "Incoming"
+	OUTBOUND = "Outgoing"
+
 
 # Site-file URL paths that Meta cannot fetch (localhost / private) and must be uploaded instead.
 LOCAL_PRIVATE_FILE_PATH_PREFIX = LOCAL_FILE_URL_PREFIXES[1]

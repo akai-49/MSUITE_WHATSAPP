@@ -9,7 +9,7 @@ from frappe.tests import IntegrationTestCase
 
 from msuite_whatsapp.api.v1.app import analytics as analytics_api
 from msuite_whatsapp.api.v1.app import calls as calls_api
-from msuite_core.services.permissions.roles import ADMIN, INBOX_AGENT, VIEWER, WA_MANAGER, WA_USER
+from msuite_whatsapp.services.permissions.roles import ADMIN, INBOX_AGENT, VIEWER, WA_MANAGER, WA_USER
 from msuite_whatsapp.api.v1.app import analytics_query as query
 from msuite_whatsapp.services.analytics import sync
 from msuite_whatsapp.whatsapp.doctype.whatsapp_flow import whatsapp_flow

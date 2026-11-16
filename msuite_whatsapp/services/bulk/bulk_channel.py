@@ -6,7 +6,7 @@ import frappe
 from frappe import _
 
 from msuite_campaigns.aws_pipeline.manifest import _dynamo_campaign_id
-from msuite_core.constants import GRAPH_API_URL, GRAPH_API_VERSION
+from msuite_whatsapp.constants import GRAPH_API_URL, GRAPH_API_VERSION
 from msuite_whatsapp.services.bulk.bulk_send_service import row_parent  # noqa: F401
 
 

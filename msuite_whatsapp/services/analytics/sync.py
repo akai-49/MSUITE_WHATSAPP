@@ -23,7 +23,7 @@ import requests
 from frappe import _
 from frappe.utils import add_days, getdate, now, today
 
-from msuite_core.constants import (
+from msuite_whatsapp.constants import (
 	GRAPH_API_URL,
 	GRAPH_API_VERSION,
 	HTTP_STATUS_FORBIDDEN,
@@ -45,9 +45,9 @@ from msuite_whatsapp.constants import (
 	AnalyticsGranularity,
 	MetricType,
 )
-from msuite_core.utils.insight_keys import delete_in_batches, make_key
-from msuite_core.services.plans.plan_enforcer import check_feature_or_throw, is_feature_enabled
-from msuite_core.services.permissions.checks import check_read
+from msuite_whatsapp.utils.insight_keys import delete_in_batches, make_key
+from msuite_whatsapp.services.plans.plan_enforcer import check_feature_or_throw, is_feature_enabled
+from msuite_whatsapp.services.permissions.checks import check_read
 from msuite_whatsapp.queries.account_repository import set_reauth_flag
 
 logger = frappe.logger(LOGGER_NAME)

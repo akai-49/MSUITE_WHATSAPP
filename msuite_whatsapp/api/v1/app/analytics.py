@@ -9,7 +9,7 @@ import frappe
 
 from msuite_whatsapp.api.v1.app import analytics_query as query
 from msuite_whatsapp.services.analytics import sync
-from msuite_core.services.permissions.checks import check_read
+from msuite_whatsapp.services.permissions.checks import check_read
 
 
 @frappe.whitelist()

@@ -17,7 +17,7 @@ import frappe
 from frappe import _
 from frappe.utils import get_system_timezone, now_datetime
 
-from msuite_core.utils.phone import normalize_phone
+from msuite_whatsapp.utils.phone import normalize_phone
 from msuite_whatsapp.services.channels.inbox_channel import is_bsuid
 from msuite_whatsapp.services.domain import BulkMessageStatus
 from msuite_whatsapp.services.bulk.rate_limit_service import claim_for_account

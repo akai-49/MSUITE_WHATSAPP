@@ -36,7 +36,7 @@ import frappe
 from frappe import _
 from frappe.utils import get_datetime, now
 
-from msuite_core.constants import GRAPH_API_BASE, LOGGER_NAME, REQUEST_TIMEOUT, CallDirection
+from msuite_whatsapp.constants import GRAPH_API_BASE, LOGGER_NAME, REQUEST_TIMEOUT, CallDirection
 from msuite_whatsapp.constants import (
 	CALL_PERMISSION_AUTO_REVOKE_THRESHOLD,
 	CALL_PERMISSION_COOLDOWN_HOURS,
@@ -1447,7 +1447,7 @@ def check_can_call(to_number="", whatsapp_account=None):
 			in_24h_window = delta.total_seconds() < 24 * 60 * 60
 
 	try:
-		from msuite_core.services.plans.plan_enforcer import (
+		from msuite_whatsapp.services.plans.plan_enforcer import (
 			check_feature_or_throw,
 			get_current_usage,
 			get_feature_limit,

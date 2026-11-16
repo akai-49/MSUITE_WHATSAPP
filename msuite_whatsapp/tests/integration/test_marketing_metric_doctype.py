@@ -10,7 +10,7 @@ import json
 import frappe
 from frappe.tests import IntegrationTestCase
 
-from msuite_core.constants import MM_PRODUCT_TYPE
+from msuite_whatsapp.constants import MM_PRODUCT_TYPE
 from msuite_whatsapp.constants import WHATSAPP_SEND_PATH_CLOUD_API, WHATSAPP_SEND_PATH_MARKETING_MESSAGES
 from msuite_whatsapp.constants import CLOUD_API_PRODUCT_TYPE
 

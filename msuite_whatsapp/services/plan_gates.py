@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from msuite_core.constants import CallDirection
-from msuite_core.services.plans.plan_enforcer import Gate
+from msuite_whatsapp.constants import CallDirection
+from msuite_whatsapp.services.plans.plan_enforcer import Gate
 
 GATES = {
 	"Channel Message": Gate(

@@ -13,7 +13,7 @@ import frappe
 import requests
 from frappe.tests import IntegrationTestCase
 
-from msuite_core.constants import MM_PRODUCT_TYPE
+from msuite_whatsapp.constants import MM_PRODUCT_TYPE
 from msuite_whatsapp.constants import (
 	ANALYTICS_BACKFILL_DAYS,
 	ANALYTICS_REFETCH_DAYS,

@@ -17,7 +17,7 @@ from msuite_whatsapp.constants import (
 	WHATSAPP_SEND_PATH_CLOUD_API,
 	WHATSAPP_SEND_PATH_MARKETING_MESSAGES,
 )
-from msuite_core.utils.phone import customer_phone, is_bsuid
+from msuite_whatsapp.utils.phone import customer_phone, is_bsuid
 from msuite_inbox.inbox.api.v1.webhook import _ensure_default_inbox_exists, _STATUS_RANK
 from msuite_inbox.inbox.constants import LOGGER_NAME, ChannelType, MessageStatus
 from msuite_whatsapp.constants import (

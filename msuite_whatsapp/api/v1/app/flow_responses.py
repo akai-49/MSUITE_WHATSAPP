@@ -11,7 +11,7 @@ import json
 
 import frappe
 
-from msuite_core.services.permissions.checks import check_delete, check_read
+from msuite_whatsapp.services.permissions.checks import check_delete, check_read
 
 DOCTYPE = "WhatsApp Flow Response"
 

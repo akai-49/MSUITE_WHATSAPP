@@ -13,7 +13,7 @@ import frappe
 import requests
 from frappe import _
 
-from msuite_core.constants import GRAPH_API_URL, GRAPH_API_VERSION
+from msuite_whatsapp.constants import GRAPH_API_URL, GRAPH_API_VERSION
 from msuite_whatsapp.queries import account_repository as accounts
 
 

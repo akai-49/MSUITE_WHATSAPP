@@ -15,7 +15,7 @@ from __future__ import annotations
 import frappe
 import requests
 
-from msuite_core.constants import GRAPH_API_BASE, LOGGER_NAME
+from msuite_whatsapp.constants import GRAPH_API_BASE, LOGGER_NAME
 from msuite_whatsapp.queries import account_repository as accounts
 
 TIER_FIELD = "whatsapp_business_manager_messaging_limit"

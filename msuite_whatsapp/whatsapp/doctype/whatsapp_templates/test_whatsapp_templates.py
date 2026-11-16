@@ -6,7 +6,7 @@ from unittest.mock import patch, MagicMock
 
 import frappe
 
-from msuite_core.constants import GRAPH_API_VERSION
+from msuite_whatsapp.constants import GRAPH_API_VERSION
 from frappe.tests import IntegrationTestCase
 
 # Cuts the auto test-record dependency walk at three Links that all lead into

@@ -20,8 +20,8 @@ import frappe
 from frappe import _
 from frappe.utils import add_days, now_datetime
 
-from msuite_core.constants import GRAPH_API_URL, GRAPH_API_VERSION
-from msuite_core.utils.files import detect_mime, resolve_frappe_path
+from msuite_whatsapp.constants import GRAPH_API_URL, GRAPH_API_VERSION
+from msuite_whatsapp.utils.files import detect_mime, resolve_frappe_path
 from msuite_whatsapp.services.domain import LOGGER_NAME, WHATSAPP_MEDIA_CACHE_TTL_DAYS
 from msuite_whatsapp.queries import account_repository as accounts
 

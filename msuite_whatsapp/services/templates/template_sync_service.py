@@ -15,10 +15,10 @@ import frappe
 from frappe import _
 from frappe.integrations.utils import make_request
 
-from msuite_core.constants import GRAPH_API_URL, GRAPH_API_VERSION
+from msuite_whatsapp.constants import GRAPH_API_URL, GRAPH_API_VERSION
 from msuite_whatsapp.constants import WHATSAPP_LTO_CONFIG_KEY
-from msuite_core.services.permissions.roles import ADMIN, SYSTEM_MANAGER
-from msuite_core.services.plans.plan_enforcer import check_feature_or_throw
+from msuite_whatsapp.services.permissions.roles import ADMIN, SYSTEM_MANAGER
+from msuite_whatsapp.services.plans.plan_enforcer import check_feature_or_throw
 from msuite_whatsapp.services.domain import META_TO_BUTTON_TYPE, ParameterFormat
 from msuite_whatsapp.queries import account_repository as accounts
 from msuite_whatsapp.queries import template_repository

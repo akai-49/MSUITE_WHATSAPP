@@ -9,7 +9,7 @@ from __future__ import annotations
 import frappe
 from frappe import _
 
-from msuite_core.services.plans.plan_enforcer import check_feature_or_throw
+from msuite_whatsapp.services.plans.plan_enforcer import check_feature_or_throw
 from msuite_whatsapp.services.domain import ParameterFormat
 from msuite_whatsapp.integrations.meta import template_provider
 from msuite_whatsapp.services.validators import template_validator

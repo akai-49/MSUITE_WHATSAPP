@@ -14,8 +14,8 @@ import re
 import frappe
 from frappe import _
 
-from msuite_core.constants import WHATSAPP_FLOW_CTA_MAX
-from msuite_core.services.permissions.checks import (
+from msuite_whatsapp.constants import WHATSAPP_FLOW_CTA_MAX
+from msuite_whatsapp.services.permissions.checks import (
 	check_create,
 	check_delete,
 	check_read,

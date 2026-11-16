@@ -6,7 +6,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 import frappe
-from msuite_core.central_config import clear_all, store_snapshot
+from msuite_whatsapp.central_config import clear_all, store_snapshot
 from msuite_whatsapp.constants import (
 	WHATSAPP_MM_SENDABLE_CATEGORY,
 	WHATSAPP_MM_SITE_CONFIG_KEY,

@@ -6,7 +6,7 @@ Thin wrappers over `phone_onboarding_service`; each returns the service's
 
 import frappe
 
-from msuite_core.services.permissions.checks import check_read, check_write
+from msuite_whatsapp.services.permissions.checks import check_read, check_write
 from msuite_whatsapp.queries.account_repository import ACCOUNT_DOCTYPE
 from msuite_whatsapp.services.accounts import phone_onboarding_service as onboarding
 

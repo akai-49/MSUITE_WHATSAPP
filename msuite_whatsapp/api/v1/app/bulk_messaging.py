@@ -10,7 +10,7 @@ and `schedulers/bulk_message_scheduler.py` (see WHATSAPP_REFACTOR_PLAN.md §5/§
 
 import frappe
 
-from msuite_core.services.permissions.checks import check_create
+from msuite_whatsapp.services.permissions.checks import check_create
 from msuite_whatsapp.tasks.bulk_message_scheduler import schedule_bulk_messages
 from msuite_whatsapp.services.bulk.recipient_import_service import (
 	download_sample_csv_template,

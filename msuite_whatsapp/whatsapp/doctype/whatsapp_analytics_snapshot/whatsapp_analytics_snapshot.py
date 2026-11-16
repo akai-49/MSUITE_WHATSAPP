@@ -10,7 +10,7 @@ from __future__ import annotations
 from frappe.model.document import Document
 
 from msuite_whatsapp.constants import AnalyticsGranularity
-from msuite_core.utils.insight_keys import make_key
+from msuite_whatsapp.utils.insight_keys import make_key
 
 
 class WhatsAppAnalyticsSnapshot(Document):

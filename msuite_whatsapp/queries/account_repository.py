@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import frappe
 
-from msuite_core.constants import GRAPH_API_URL, GRAPH_API_VERSION
+from msuite_whatsapp.constants import GRAPH_API_URL, GRAPH_API_VERSION
 
 ACCOUNT_DOCTYPE = "WhatsApp Account"
 PHONE_CHILD_DOCTYPE = "WhatsApp Phone Number"

@@ -13,7 +13,7 @@ import json
 import frappe
 from frappe.model.document import Document
 
-from msuite_core.services.permissions.checks import check_create, check_read
+from msuite_whatsapp.services.permissions.checks import check_create, check_read
 from msuite_whatsapp.services.flows import flow_service
 from msuite_whatsapp.services.validators import flow_validator
 

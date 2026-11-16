@@ -24,8 +24,8 @@ This patch:
 
 import frappe
 
-from msuite_core.constants import INSIGHT_DELETE_BATCH
-from msuite_core.utils.insight_keys import delete_in_batches, make_key
+from msuite_whatsapp.constants import INSIGHT_DELETE_BATCH
+from msuite_whatsapp.utils.insight_keys import delete_in_batches, make_key
 from msuite_whatsapp.constants import AnalyticsGranularity
 
 

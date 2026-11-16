@@ -31,7 +31,7 @@ import frappe
 from frappe import _
 from frappe.utils import get_system_timezone
 
-from msuite_core.constants import SECONDS_PER_MINUTE
+from msuite_whatsapp.constants import SECONDS_PER_MINUTE
 from msuite_whatsapp.constants import (
 	MM_BROADCAST_ROWS_LIMIT,
 	WABA_UTC_OFFSET_FIELD,

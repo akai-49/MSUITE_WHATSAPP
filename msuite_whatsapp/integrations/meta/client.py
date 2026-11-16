@@ -160,7 +160,7 @@ def _should_use_marketing_messages(doc, body: dict) -> bool:
 	"""True only when the site opted in AND the body is a known MARKETING template.
 
 	Anything else (text, interactive, utility/auth, unknown template) stays on the Cloud API."""
-	from msuite_core.central_config import get_central_config
+	from msuite_whatsapp.central_config import get_central_config
 
 	if not cint(get_central_config(WHATSAPP_MM_SITE_CONFIG_KEY)):
 		return False

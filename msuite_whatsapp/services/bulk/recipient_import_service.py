@@ -14,7 +14,7 @@ from frappe import _
 from frappe.utils import cint
 
 from msuite_whatsapp.queries import recipient_repository as recipients
-from msuite_core.utils.files import detect_column, parse_csv, parse_excel, resolve_file_path
+from msuite_whatsapp.utils.files import detect_column, parse_csv, parse_excel, resolve_file_path
 from msuite_whatsapp.services.validators.recipient_validator import clean_mobile
 
 # Column names that indicate a mobile number field
@@ -50,7 +50,7 @@ _NAME_HINTS = (
 
 def search_importable_doctypes(query: str = "") -> list[str]:
 	"""Return the allow-listed DocTypes matching query (see utils/import_guard)."""
-	from msuite_core.utils.import_guard import importable_doctypes
+	from msuite_whatsapp.utils.import_guard import importable_doctypes
 
 	return importable_doctypes(query)
 
@@ -64,7 +64,7 @@ def get_doctype_import_meta(doctype: str) -> dict:
 	if not doctype or not frappe.db.exists("DocType", doctype):
 		frappe.throw(_("DocType {0} does not exist").format(doctype))
 
-	from msuite_core.utils.import_guard import assert_importable
+	from msuite_whatsapp.utils.import_guard import assert_importable
 
 	assert_importable(doctype)  # allow-list (audit C5); also checks read below
 	if not frappe.has_permission(doctype, "read"):
@@ -185,7 +185,7 @@ def preview_doctype_recipients(
 	"""Preview matching records count and sample rows for DocType import."""
 	if not doctype or not frappe.db.exists("DocType", doctype):
 		frappe.throw(_("DocType {0} does not exist").format(doctype))
-	from msuite_core.utils.import_guard import assert_importable
+	from msuite_whatsapp.utils.import_guard import assert_importable
 
 	assert_importable(doctype)  # allow-list (audit C5); also checks read below
 	if not frappe.has_permission(doctype, "read"):
@@ -257,7 +257,7 @@ def fetch_doctype_recipients(
 	"""Fetch normalized, validated recipient rows from a DocType to populate recipient list."""
 	if not doctype or not frappe.db.exists("DocType", doctype):
 		frappe.throw(_("DocType {0} does not exist").format(doctype))
-	from msuite_core.utils.import_guard import assert_importable
+	from msuite_whatsapp.utils.import_guard import assert_importable
 
 	assert_importable(doctype)  # allow-list (audit C5); also checks read below
 	if not frappe.has_permission(doctype, "read"):

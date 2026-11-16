@@ -10,7 +10,7 @@ from datetime import timedelta
 import frappe
 from frappe.utils import add_days, getdate, today
 
-from msuite_core.services.permissions.checks import check_read, check_write
+from msuite_whatsapp.services.permissions.checks import check_read, check_write
 from msuite_whatsapp.services.analytics.aivo_facts import get_whatsapp_aivo_facts
 from msuite_whatsapp.services.analytics.broadcast_metrics import _rate, summarize_status_counts
 from msuite_whatsapp.api.v1.app.analytics_query import calculate_reply_rate

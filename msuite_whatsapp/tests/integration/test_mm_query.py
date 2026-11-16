@@ -11,7 +11,7 @@ import frappe
 from frappe.tests import IntegrationTestCase
 from frappe.utils import add_days, today
 
-from msuite_core.constants import MM_PRODUCT_TYPE
+from msuite_whatsapp.constants import MM_PRODUCT_TYPE
 from msuite_whatsapp.constants import WHATSAPP_PRICING_CATEGORY_MARKETING_LITE
 from msuite_whatsapp.constants import (
 	CLOUD_API_PRODUCT_TYPE,

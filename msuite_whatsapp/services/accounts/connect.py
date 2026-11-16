@@ -3,9 +3,12 @@
 import frappe
 import requests
 
-from msuite_core.constants import GRAPH_API_URL, GRAPH_API_VERSION, LOGGER_NAME, AccountStatus
+from msuite_whatsapp.constants import GRAPH_API_URL, GRAPH_API_VERSION, LOGGER_NAME, AccountStatus
 # One shared dispatcher for the optional avatar handler (hook, else msuite_social when installed).
-from msuite_core.services.connections.profile import _enqueue_account_avatar  # noqa: F401
+try:
+	from msuite_core.services.connections.profile import _enqueue_account_avatar  # noqa: F401
+except ImportError:
+	_enqueue_account_avatar = None
 
 logger = frappe.logger(LOGGER_NAME)
 
@@ -139,12 +142,13 @@ def _handle_whatsapp_credentials(credentials):
 
 	# Enqueue background refresh to keep daily sync and CDN re-signing active
 	try:
-		frappe.enqueue(
-			"msuite_core.services.connections.profile._refresh_whatsapp_account",
-			name=doc.name,
-			queue="short",
-			enqueue_after_commit=True,
-		)
+		if "msuite_core" in frappe.get_installed_apps():
+			frappe.enqueue(
+				"msuite_core.services.connections.profile._refresh_whatsapp_account",
+				name=doc.name,
+				queue="short",
+				enqueue_after_commit=True,
+			)
 		frappe.enqueue(
 			"msuite_whatsapp.services.accounts.phone_onboarding_service.sync_account_usernames",
 			account=doc.name,
@@ -225,7 +229,7 @@ def _sync_phones(doc, phones):
 def _trigger_analytics_backfill(account_name: str):
 	"""Enqueue analytics backfill for a newly connected account (last 30 days)."""
 	from msuite_whatsapp.constants import ANALYTICS_BACKFILL_DAYS
-	from msuite_core.services.plans.plan_enforcer import is_feature_enabled
+	from msuite_whatsapp.services.plans.plan_enforcer import is_feature_enabled
 
 	if not is_feature_enabled("analytics"):
 		return

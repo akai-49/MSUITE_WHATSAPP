@@ -15,8 +15,8 @@ before_install = "msuite_whatsapp.install.before_install"
 # WhatsApp, moved from msuite_workspace
 # ------------------
 
-_PE = "msuite_core.services.plans.plan_enforcer"
-_CCE = "msuite_campaigns.campaign.doctype.campaign_calendar_event.campaign_calendar_event"
+_PE = "msuite_whatsapp.services.plans.plan_enforcer"
+_CCE = "msuite_whatsapp.services.campaign_sync"
 
 # This app's records in the global search. The key sets the order of the groups.
 msuite_search_sources = {"50_whatsapp_accounts": "msuite_whatsapp.services.home.search.search"}

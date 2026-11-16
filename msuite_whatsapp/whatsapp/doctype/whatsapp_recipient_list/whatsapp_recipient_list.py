@@ -36,7 +36,7 @@ class WhatsAppRecipientList(Document):
 		in the list / earlier in this import, are skipped instead of
 		aborting the whole import in validate().
 		"""
-		from msuite_core.utils.import_guard import assert_importable
+		from msuite_whatsapp.utils.import_guard import assert_importable
 		from msuite_whatsapp.services.validators.recipient_validator import clean_mobile
 
 		assert_importable(doctype)

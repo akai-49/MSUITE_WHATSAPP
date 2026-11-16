@@ -10,7 +10,7 @@ import re
 import frappe
 from frappe import _
 
-from msuite_core.utils.phone import clean_mobile, match_country_code
+from msuite_whatsapp.utils.phone import clean_mobile, match_country_code
 
 
 def validate_and_normalize_recipients(recipients, default_region: str | None = None) -> None:
@@ -21,7 +21,7 @@ def validate_and_normalize_recipients(recipients, default_region: str | None = N
 	its docstring for why the child controller's own `validate()` isn't
 	enough) and any other bulk-recipient entry point.
 	"""
-	from msuite_core.services.validation import phone as phone_validator
+	from msuite_whatsapp.services.validation import phone as phone_validator
 
 	region = (default_region or phone_validator.get_system_default_region()).upper()
 	seen = {}

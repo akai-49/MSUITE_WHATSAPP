@@ -17,7 +17,7 @@ import frappe
 from frappe import _
 from werkzeug.wrappers import Response
 
-from msuite_core.integrations.provider_auth import handle_verification_challenge, validate_provider_auth
+from msuite_whatsapp.integrations.provider_auth import handle_verification_challenge, validate_provider_auth
 
 
 @frappe.whitelist(allow_guest=True)

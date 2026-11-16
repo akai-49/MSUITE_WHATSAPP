@@ -15,7 +15,7 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
-from msuite_core.constants import MM_PRODUCT_TYPE
+from msuite_whatsapp.constants import MM_PRODUCT_TYPE
 from msuite_whatsapp.constants import MM_SYNC_PRODUCT_TYPES
 
 # Int metrics that may be unavailable (None) but never negative.

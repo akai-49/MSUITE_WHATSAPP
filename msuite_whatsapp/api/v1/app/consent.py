@@ -14,8 +14,8 @@ from msuite_campaigns.audience.services.contact_sync_service import (
 	record_channel_opt_in,
 	record_channel_opt_out,
 )
-from msuite_core.services.validation import phone as phone_validator
-from msuite_core.services.permissions.checks import check_write
+from msuite_whatsapp.services.validation import phone as phone_validator
+from msuite_whatsapp.services.permissions.checks import check_write
 
 RECIPIENT_LIST_DOCTYPE = "WhatsApp Recipient List"
 MAX_NUMBERS_PER_CALL = 5000

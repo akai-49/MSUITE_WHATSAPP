@@ -17,8 +17,8 @@ import requests
 from frappe import _
 from frappe.integrations.utils import make_post_request, make_request
 
-from msuite_core.constants import GRAPH_API_URL, GRAPH_API_VERSION
-from msuite_core.utils.files import detect_mime
+from msuite_whatsapp.constants import GRAPH_API_URL, GRAPH_API_VERSION
+from msuite_whatsapp.utils.files import detect_mime
 from msuite_whatsapp.services.domain import BUTTON_TYPE_TO_META, ParameterFormat
 from msuite_whatsapp.queries import account_repository as accounts
 from msuite_whatsapp.services.validators.template_validator import parse_limited_time_offer

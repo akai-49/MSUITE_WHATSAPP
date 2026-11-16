@@ -29,7 +29,7 @@ import re
 from collections import Counter
 from datetime import date, datetime, timezone
 
-from msuite_core.constants import SECONDS_PER_MINUTE
+from msuite_whatsapp.constants import SECONDS_PER_MINUTE
 from msuite_whatsapp.constants import (
 	WABA_UTC_OFFSET_MAX_MINUTES,
 	WABA_UTC_OFFSET_MIN_MINUTES,

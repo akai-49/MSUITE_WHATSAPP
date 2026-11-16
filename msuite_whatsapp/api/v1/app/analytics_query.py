@@ -13,7 +13,7 @@ import json
 import frappe
 from frappe.utils import add_days, getdate, today
 
-from msuite_core.constants import GRAPH_API_BASE, MM_PRODUCT_TYPE
+from msuite_whatsapp.constants import GRAPH_API_BASE, MM_PRODUCT_TYPE
 from msuite_whatsapp.constants import WHATSAPP_PRICING_CATEGORY_MARKETING_LITE
 from msuite_whatsapp.constants import (
 	MM_CONVERSION_ROWS_LIMIT,
@@ -23,7 +23,7 @@ from msuite_whatsapp.constants import (
 	MM_TEMPLATE_ROWS_LIMIT,
 	MetricType,
 )
-from msuite_core.services.permissions.checks import check_read
+from msuite_whatsapp.services.permissions.checks import check_read
 from msuite_whatsapp.queries.account_repository import get_display_phone_number
 
 

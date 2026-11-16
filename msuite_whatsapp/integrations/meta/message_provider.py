@@ -21,7 +21,7 @@ import re
 import frappe
 from frappe import _
 
-from msuite_core.constants import (
+from msuite_whatsapp.constants import (
 	WHATSAPP_INTERACTIVE_BODY_MAX,
 	WHATSAPP_PRODUCT_CAROUSEL_MAX,
 	WHATSAPP_PRODUCT_CAROUSEL_MIN,

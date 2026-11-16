@@ -25,7 +25,7 @@ from datetime import date
 import frappe
 from frappe.utils import add_days, cint, getdate, now, today
 
-from msuite_core.constants import GRAPH_API_URL, GRAPH_API_VERSION, LOGGER_NAME
+from msuite_whatsapp.constants import GRAPH_API_URL, GRAPH_API_VERSION, LOGGER_NAME
 from msuite_whatsapp.constants import WHATSAPP_MM_TERMS_DEFAULT_PREFIX
 from msuite_whatsapp.constants import (
 	ANALYTICS_BACKFILL_DAYS,
@@ -54,7 +54,7 @@ from msuite_whatsapp.constants import (
 	WHATSAPP_MM_SENDABLE_CATEGORY,
 	WHATSAPP_MM_SITE_CONFIG_KEY,
 )
-from msuite_core.services.plans.plan_enforcer import is_feature_enabled
+from msuite_whatsapp.services.plans.plan_enforcer import is_feature_enabled
 from msuite_whatsapp.services.analytics import sync as analytics_sync
 from msuite_whatsapp.services.analytics.mm_parse import (
 	derive_utc_offset_minutes,
@@ -82,7 +82,7 @@ def _is_enabled(account_name: str, waba_id: str) -> bool:
 
 	Opt-in is the site_config flag or the per-WABA default set when Meta reports the MM terms signed.
 	"""
-	from msuite_core.central_config import get_central_config
+	from msuite_whatsapp.central_config import get_central_config
 
 	if not is_feature_enabled("analytics"):
 		return False

@@ -10,7 +10,7 @@ functions at this exact dotted path
 unchanged. New code should import from the domain modules directly.
 """
 
-from msuite_core.services.permissions.checks import check_create, check_delete, check_read, check_write
+from msuite_whatsapp.services.permissions.checks import check_create, check_delete, check_read, check_write
 from msuite_whatsapp.api.v1.app.accounts import (
 	get_country_dialing_codes,
 	get_dashboard_metrics,

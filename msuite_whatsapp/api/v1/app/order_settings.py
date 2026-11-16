@@ -5,7 +5,7 @@ from __future__ import annotations
 import frappe
 from frappe import _
 
-from msuite_core.services.permissions.checks import check_read, check_write
+from msuite_whatsapp.services.permissions.checks import check_read, check_write
 
 KEY_SELECTED_FLOW = "msuite_order_address_flow_name"
 KEY_AUTO_SEND = "msuite_order_address_auto_send"

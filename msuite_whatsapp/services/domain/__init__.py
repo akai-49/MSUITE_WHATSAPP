@@ -8,7 +8,7 @@ app-wide module remains the single source of truth — nothing is
 redefined here.
 """
 
-from msuite_core.constants import (
+from msuite_whatsapp.constants import (
 	GRAPH_API_BASE,
 	GRAPH_API_VERSION,
 	LOGGER_NAME,

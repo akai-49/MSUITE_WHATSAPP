@@ -25,9 +25,9 @@ import frappe
 from frappe import _
 from frappe.utils import cint
 
-from msuite_core.constants import WHATSAPP_INTERACTIVE_BODY_MAX
-from msuite_core.utils.files import is_local_file_url, resolve_frappe_path
-from msuite_core.utils.phone import customer_phone, is_bsuid  # noqa: F401
+from msuite_whatsapp.constants import WHATSAPP_INTERACTIVE_BODY_MAX
+from msuite_whatsapp.utils.files import is_local_file_url, resolve_frappe_path
+from msuite_whatsapp.utils.phone import customer_phone, is_bsuid  # noqa: F401
 from msuite_inbox.inbox.constants import (
 	LOGGER_NAME,
 	STICKER_MIME,

@@ -11,8 +11,8 @@ import frappe
 from frappe.tests import IntegrationTestCase
 from frappe.utils import add_days
 
-from msuite_core.constants import MM_PRODUCT_TYPE
-from msuite_core.utils.insight_keys import make_key
+from msuite_whatsapp.constants import MM_PRODUCT_TYPE
+from msuite_whatsapp.utils.insight_keys import make_key
 from msuite_whatsapp.constants import (
 	MM_METRICS_RETENTION_DAYS,
 	AnalyticsGranularity,
